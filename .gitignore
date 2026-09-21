@@ -23,6 +23,7 @@ logs/*.log.*
 data/*.db
 data/*.sqlite*
 data/config.json
+ctf/
 
 # IDE / OS noise
 .idea/
@@ -33,4 +34,3 @@ Thumbs.db
 # Local experiment scratch space
 work/
 outputs/
-
