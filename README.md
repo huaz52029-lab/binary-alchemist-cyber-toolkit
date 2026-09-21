@@ -72,9 +72,28 @@ Encoding module (编码转换):
 
 CTF module (CTF 工具):
 
-- **Auto Decode** (`ctf.auto_decode`): heuristic candidate detection across
-  Base64/Base32/Base58/Hex/Binary/URL/Unicode/ROT13/ROT47/JWT, ranked by
-  confidence and explicitly labeled as non-deterministic.
+- **Auto Decode** (`ctf.auto_decode`): bounded multi-layer candidate decoding
+  (Base64/Base64URL/Base32/Base58/Hex/Binary/URL/Unicode/HTML/JSON/ROT/JWT/
+  Gzip), with chain display, depth limits and cycle detection.
+- **Regex 分析器** (`ctf.regex`): find/groups/replace with built-in templates
+  and complexity hints.
+- **Flag 提取** (`ctf.flag_tools`): candidate flag extraction with follow-up
+  analysis.
+- **Text Analysis** (`ctf.text_analysis`): statistics, frequency, entropy and
+  encoding notes.
+- **Crypto Helper** (`ctf.crypto_helper`): unified orchestration entry to the
+  existing hash/XOR/RSA/Base64/Hex tools.
+- **模数计算** (`ctf.mod_math`) and **数据转换** (`ctf.data_transform`).
+- **CTF 工作台** (`ctf.workspace`), **CTF Notes** (`ctf.notes`) and
+  **CTF Pipeline** (`ctf.pipeline`): local challenge workspaces, Markdown notes
+  and local-only tool pipelines.
+- **Challenge Analyzer** (`ctf.challenge_analyzer`): candidate classification
+  with tool recommendations.
+
+> The CTF module is an orchestration layer: it reuses the network/web/encoding/
+> crypto/file/system tools rather than re-implementing them. Everything is
+> offline and local; attachments are never executed; pipelines only run local
+> tools and reject active network tools by default.
 
 Web security module (Web安全):
 

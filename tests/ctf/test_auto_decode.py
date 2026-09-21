@@ -77,7 +77,7 @@ def test_tool_runs_and_returns_rows() -> None:
     assert result.data[0]["confidence"] == "High"
     assert result.findings[0].kind.value == "HEURISTIC"
     labels = [column["label"] for column in result.metadata["display"]["table"]["columns"]]
-    assert labels == ["候选编码", "置信度", "解码结果", "说明"]
+    assert labels == ["候选编码", "置信度", "解码结果", "说明", "解码链", "层数"]
 
 
 def test_tool_empty_input_fails() -> None:

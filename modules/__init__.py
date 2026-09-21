@@ -18,6 +18,16 @@ def register_builtin_tools(registry: ToolRegistry) -> None:
     from modules.crypto.rsa_helper import RsaHelperTool
     from modules.crypto.xor import XorTool
     from modules.ctf.auto_decode import AutoDecodeTool
+    from modules.ctf.challenge_analyzer import ChallengeAnalyzerTool
+    from modules.ctf.crypto_helper import CryptoHelperTool
+    from modules.ctf.data_transform import DataTransformTool
+    from modules.ctf.flag_tools import FlagToolsTool
+    from modules.ctf.mod_math import ModMathTool
+    from modules.ctf.notes import NotesTool
+    from modules.ctf.pipeline import PipelineTool
+    from modules.ctf.regex import RegexTool
+    from modules.ctf.text_analysis import TextAnalysisTool
+    from modules.ctf.workspace import WorkspaceTool
     from modules.encoding.base32 import Base32Tool
     from modules.encoding.base58 import Base58Tool
     from modules.encoding.base64 import Base64Tool
@@ -83,6 +93,16 @@ def register_builtin_tools(registry: ToolRegistry) -> None:
     registry.register(JwtTool())
     registry.register(RsaHelperTool())
     registry.register(AutoDecodeTool())
+    registry.register(RegexTool())
+    registry.register(FlagToolsTool())
+    registry.register(TextAnalysisTool())
+    registry.register(ModMathTool())
+    registry.register(DataTransformTool())
+    registry.register(ChallengeAnalyzerTool())
+    registry.register(WorkspaceTool())
+    registry.register(NotesTool())
+    registry.register(PipelineTool(registry))
+    registry.register(CryptoHelperTool(registry))
     registry.register(UrlParserTool())
     registry.register(HttpHeadersTool())
     registry.register(CookieAnalysisTool())

@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import QPoint, Signal
 from PySide6.QtGui import QDragEnterEvent, QDropEvent
 from PySide6.QtWidgets import (
     QComboBox,
@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
     QFormLayout,
     QHBoxLayout,
     QLabel,
+    QMenu,
     QPlainTextEdit,
     QPushButton,
     QSpinBox,
@@ -77,6 +78,18 @@ class ToolPage(QWidget):
     """
 
     run_requested = Signal(object)
+    send_to_requested = Signal(str, str)
+
+    SEND_TO_TARGETS = (
+        ("ctf.auto_decode", "Auto Decode"),
+        ("ctf.regex", "Regex"),
+        ("ctf.text_analysis", "Text Analysis"),
+        ("ctf.data_transform", "数据转换"),
+        ("crypto.xor", "XOR"),
+        ("crypto.hash", "Hash"),
+        ("encoding.base64", "Base64"),
+        ("encoding.hex", "Hex"),
+    )
 
     def __init__(
         self,
@@ -149,6 +162,10 @@ class ToolPage(QWidget):
         export_button = QPushButton("导出", self)
         export_button.setObjectName("flatButton")
         export_button.clicked.connect(self._export_result)
+        send_to_button = QPushButton("发送到", self)
+        send_to_button.setObjectName("flatButton")
+        send_to_button.clicked.connect(self._show_send_to_menu)
+        self._send_to_button = send_to_button
         actions = QHBoxLayout()
         actions.addWidget(self._run_button)
         actions.addWidget(self._cancel_button)
@@ -156,6 +173,7 @@ class ToolPage(QWidget):
         actions.addStretch(1)
         actions.addWidget(copy_button)
         actions.addWidget(export_button)
+        actions.addWidget(send_to_button)
 
         self._progress_label = QLabel("", self)
         self._progress_label.setObjectName("toolProgress")
@@ -359,6 +377,20 @@ class ToolPage(QWidget):
     def _copy_result(self) -> None:
         if self._last_result is not None:
             self._result_panel.copy_to_clipboard()
+
+    def _show_send_to_menu(self) -> None:
+        if self._last_result is None:
+            return
+        menu = QMenu(self)
+        text = self._result_panel.current_text()
+        for tool_id, label in self.SEND_TO_TARGETS:
+            action = menu.addAction(f"发送到 {label}")
+            action.triggered.connect(
+                lambda _checked=False, target=tool_id, payload=text: self.send_to_requested.emit(
+                    target, payload
+                )
+            )
+        menu.exec(self._send_to_button.mapToGlobal(QPoint(0, self._send_to_button.height())))
 
     def _export_result(self) -> None:
         if self._last_result is None or self._exporter_manager is None:

@@ -25,6 +25,8 @@ DISPLAY_SPEC: dict[str, Any] = {
             {"field": "confidence", "label": "置信度"},
             {"field": "decoded", "label": "解码结果"},
             {"field": "description", "label": "说明"},
+            {"field": "chain", "label": "解码链"},
+            {"field": "depth", "label": "层数"},
         ]
     },
 }
@@ -50,7 +52,15 @@ class AutoDecodeTool(BaseTool):
                 label="未知文本",
                 kind=ToolParameterKind.MULTILINE,
                 placeholder="SGVsbG8= 或 68656c6c6f",
-            )
+            ),
+            ToolParameter(
+                name="max_depth",
+                label="最大递归层数",
+                kind=ToolParameterKind.INTEGER,
+                default=5,
+                minimum=1,
+                maximum=10,
+            ),
         ],
     )
 
@@ -61,7 +71,7 @@ class AutoDecodeTool(BaseTool):
             context.error(f"{self.id} {message}")
             return context.make_result(ResultStatus.FAILED, message)
         context.info(f"{self.id} 开始分析：输入 {len(text)} 字符")
-        candidates = decode_candidates(text)
+        candidates = decode_candidates(text, max_depth=int(params.get("max_depth", 5)))
         rows = [
             {
                 "encoding": candidate.name,
@@ -72,6 +82,8 @@ class AutoDecodeTool(BaseTool):
                     else candidate.decoded[:MAX_DECODED_LENGTH] + "…"
                 ),
                 "description": candidate.description,
+                "chain": " → ".join(candidate.chain),
+                "depth": candidate.depth,
             }
             for candidate in candidates
         ]

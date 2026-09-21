@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Plugin management UI and report center.
 - PyInstaller onedir / installer packaging.
 
+## [0.10.0] - 2026-09-21
+
+### Added
+
+- CTF workbench: enhanced multi-layer Auto Decode (new decoders, chains, depth
+  and cycle limits), regex tester with templates, flag extraction, text
+  analysis, crypto helper orchestration, modular math, data transform,
+  challenge analyzer with tool recommendations.
+- Local challenge workspaces (metadata/attachments/notes/results), Markdown
+  notes, and versioned local-tool pipelines (active network tools rejected).
+- Tool Input Bridge: send results from one tool to another via a unified
+  "发送到" menu.
+
 ## [0.9.0] - 2026-09-21
 
 ### Added

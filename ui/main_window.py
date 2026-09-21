@@ -43,6 +43,7 @@ from ui.settings_dialog import SettingsDialog
 from ui.task_panel import TaskPanel
 from ui.theme import ThemeManager
 from ui.tool_page import ToolPage
+from ui.widgets.command_input import CommandInput
 
 
 class MainWindow(QMainWindow):
@@ -209,9 +210,24 @@ class MainWindow(QMainWindow):
                     exporter_manager=self._context.exporter_manager,
                 )
                 page.run_requested.connect(self._on_run_requested)
+                page.send_to_requested.connect(self._send_to)
             self._stack.addWidget(page)
             self._tool_pages[tool_id] = page
         self._stack.setCurrentWidget(page)
+
+    def _send_to(self, tool_id: str, payload: str) -> None:
+        """Tool Input Bridge: open a tool page and prefill its first text field."""
+        self._open_tool(tool_id)
+        page = self._tool_pages.get(tool_id)
+        if page is None:
+            return
+        if isinstance(page, ToolPage):
+            for widget in page._fields.values():
+                if isinstance(widget, CommandInput):
+                    widget.set_text(payload)
+                    return
+        if isinstance(page, EncodingToolPage):
+            page._input.set_text(payload)
 
     def _on_run_requested(self, params: object) -> None:
         self._logger.warning("Tool without an execution backend requested a run: %s", params)
