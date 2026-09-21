@@ -59,6 +59,7 @@ ignore = ["RUF001", "RUF002"]
 
 [tool.ruff.lint.per-file-ignores]
 "scripts/*.py" = ["T20"]
+"tests/ui/conftest.py" = ["E402"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -67,7 +68,7 @@ quote-style = "double"
 python_version = "3.13"
 strict = true
 plugins = ["pydantic.mypy"]
-files = ["core", "app.py", "main.py"]
+files = ["core", "ui", "app.py", "main.py"]
 exclude = ["build", "dist"]
 
 [tool.pytest.ini_options]

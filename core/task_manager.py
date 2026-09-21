@@ -104,12 +104,13 @@ class TaskManager:
             task = Task(task_id=uuid.uuid4().hex, tool_id=tool_id, params=dict(params))
             self._tasks[task.task_id] = task
             self._cancel_events[task.task_id] = threading.Event()
+            pending_copy = task.model_copy()
+        # Notify PENDING before handing the callable to the pool so the
+        # lifecycle order PENDING -> RUNNING -> terminal is preserved.
+        self._notify(pending_copy)
         future = self._executor.submit(self._run, task.task_id, fn)
         with self._lock:
             self._futures[task.task_id] = future
-        copy = self._copy(task.task_id)
-        if copy is not None:
-            self._notify(copy)
         return task.task_id
 
     def submit_tool(
@@ -231,6 +232,21 @@ class TaskManager:
     def running_count(self) -> int:
         with self._lock:
             return sum(task.status is TaskStatus.RUNNING for task in self._tasks.values())
+
+    def total_count(self) -> int:
+        """Return the number of tasks ever submitted to this manager."""
+        with self._lock:
+            return len(self._tasks)
+
+    def recent_snapshots(self, limit: int = 10) -> list[TaskResult]:
+        """Return the most recently created task snapshots, newest first."""
+        with self._lock:
+            tasks = sorted(
+                self._tasks.values(),
+                key=lambda task: task.created_at,
+                reverse=True,
+            )[:limit]
+        return [TaskResult.from_task(task) for task in tasks]
 
     def shutdown(self, *, wait: bool = False, cancel_running: bool = False) -> None:
         """Stop accepting tasks and release the worker threads."""

@@ -80,7 +80,7 @@ python scripts\test.py        # pytest
 
 ## 8. Phase plan (strict order)
 
-0. Skeleton (done) - 1. Core (done) - 2. GUI frame - 3. First tool: IP info -
+0. Skeleton (done) - 1. Core (done) - 2. GUI frame (done) - 3. First tool: IP info -
 4. Network tools - 5. Encoding & crypto - 6. Web security - 7. File analysis -
 8. System security - 9. CTF - 10. Plugins UI - 11. Reports & history -
 12. Full test coverage - 13. Performance - 14. PyInstaller onedir, then installer.
@@ -93,4 +93,3 @@ Do not jump ahead. A stable core beats early breadth.
   stealth, spreading or destructive defaults.
 - Dual-use capabilities belong in Advanced modules with explicit lab/authorization
   framing. Active network features require an explicit target.
-

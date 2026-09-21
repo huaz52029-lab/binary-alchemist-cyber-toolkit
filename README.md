@@ -28,9 +28,9 @@ built around clean architecture, a plugin system and a unified task/result model
 
 ## Project status
 
-Phase 0 (skeleton) and Phase 1 (core layer) are complete. The GUI, tools and packaging
-arrive in later phases; see [CHANGELOG.md](CHANGELOG.md) and the phase plan in
-[AGENTS.md](AGENTS.md).
+Phase 0 (skeleton), Phase 1 (core layer) and Phase 2 (GUI framework) are complete.
+Security tools and packaging arrive in later phases; see [CHANGELOG.md](CHANGELOG.md)
+and the phase plan in [AGENTS.md](AGENTS.md).
 
 ## Requirements
 
@@ -47,9 +47,16 @@ py -3.13 -m venv .venv
 # install core + development dependencies
 python -m pip install -e ".[dev]"
 
-# self-check the core layer (headless)
+# launch the desktop application
+python main.py
+
+# headless core self-check
 python main.py --self-test
 ```
+
+The GUI starts on a dark professional console theme with a left navigation tree,
+dashboard statistics, live task/log panels and a settings dialog. Use
+`--plugins` to load plugins from the plugins directory at startup.
 
 Useful commands:
 
@@ -101,4 +108,3 @@ external internet access. Every core module ships with tests.
 ## License
 
 [MIT](LICENSE)
-

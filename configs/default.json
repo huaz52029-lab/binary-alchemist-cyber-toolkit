@@ -16,6 +16,8 @@
     "max_workers": 8,
     "default_timeout": 30.0
   },
+  "startup": {
+    "load_plugins": false
+  },
   "recent_tools": []
 }
-

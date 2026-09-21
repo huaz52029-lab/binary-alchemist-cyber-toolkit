@@ -141,6 +141,26 @@ def test_listeners_receive_state_changes() -> None:
         manager.shutdown(wait=True)
 
 
+def test_pending_is_notified_before_running() -> None:
+    manager = TaskManager(max_workers=2)
+    seen: list[TaskStatus] = []
+    manager.subscribe(lambda task: seen.append(task.status))
+    release = threading.Event()
+
+    def block(context: ExecutionContext) -> Any:
+        release.wait(timeout=2.0)
+        return context.make_result(ResultStatus.SUCCESS, "done")
+
+    try:
+        task_id = manager.submit("test.tool", {}, block)
+        assert seen[0] is TaskStatus.PENDING
+        release.set()
+        manager.wait(task_id, timeout=5.0)
+        assert TaskStatus.RUNNING in seen
+    finally:
+        manager.shutdown(wait=True)
+
+
 def test_submit_tool_records_tool_id(dummy_tool: DummyTool) -> None:
     manager = TaskManager(max_workers=2)
     try:

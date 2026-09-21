@@ -40,7 +40,7 @@ class AppContext:
         home: Path | str | None = None,
         config_path: Path | str | None = None,
         log_level: str | None = None,
-        load_plugins: bool = False,
+        load_plugins: bool | None = None,
     ) -> AppContext:
         """Bootstrap every core service and return a ready context."""
         paths = RuntimePaths.resolve(home)
@@ -48,6 +48,7 @@ class AppContext:
         user_config = Path(config_path) if config_path is not None else paths.user_config
         config_manager = ConfigManager(user_config, defaults_path=paths.default_config)
         config = config_manager.load()
+        load_plugins = config.startup.load_plugins if load_plugins is None else load_plugins
         logger = LoggerManager(
             paths.logs,
             level=log_level or config.logging.level,
@@ -84,6 +85,16 @@ class AppContext:
                 report.failed_count,
             )
         return context
+
+    def plugin_count(self) -> int:
+        """Count discovered plugin folders without loading them."""
+        return len(
+            PluginLoader(
+                self.tool_registry,
+                self.paths.plugins,
+                self.logger.get_logger("core.plugins"),
+            ).discover()
+        )
 
     def shutdown(self) -> None:
         """Release background workers and logging handlers."""

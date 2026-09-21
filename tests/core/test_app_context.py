@@ -18,5 +18,5 @@ def test_context_bootstraps_all_services(tmp_home: Path) -> None:
 
 
 def test_application_self_test_passes(tmp_home: Path) -> None:
-    application = Application.from_args([])
+    application = Application.from_args(["--self-test"])
     assert application.run() == 0

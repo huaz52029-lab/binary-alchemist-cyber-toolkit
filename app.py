@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import sys
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -21,8 +22,9 @@ from core.task import ExecutionContext, TaskStatus
 class Application:
     """Owns the application lifecycle from bootstrap to shutdown."""
 
-    def __init__(self, context: AppContext) -> None:
+    def __init__(self, context: AppContext, *, args: argparse.Namespace | None = None) -> None:
         self.context = context
+        self._args = args or argparse.Namespace(self_test=False)
         self._logger = logging.getLogger("app")
 
     @classmethod
@@ -69,15 +71,39 @@ class Application:
             log_level=args.log_level,
             load_plugins=args.plugins,
         )
-        return cls(context)
+        return cls(context, args=args)
 
     def run(self) -> int:
-        """Run the application; Phase 1 executes the core self-test."""
-        try:
+        """Run the application: GUI by default, self-test with ``--self-test``."""
+        if self._args.self_test:
             self._run_self_test()
+            return 0
+        return self._run_gui()
+
+    def _run_gui(self) -> int:
+        try:
+            from PySide6.QtWidgets import QApplication
+
+            from ui.main_window import MainWindow
+            from ui.theme import ThemeManager
+        except ImportError:
+            self._logger.error(
+                "PySide6 is not installed; falling back to the self-test. "
+                "Install it with: pip install -e '.[gui]'"
+            )
+            self._run_self_test()
+            return 0
+        app = QApplication(sys.argv)
+        app.setApplicationName(APP_NAME)
+        app.setApplicationDisplayName(APP_DISPLAY_NAME)
+        app.setApplicationVersion(APP_VERSION)
+        try:
+            theme_manager = ThemeManager(theme=self.context.config.theme)
+            window = MainWindow(self.context, theme_manager)
+            window.show()
+            return app.exec()
         finally:
             self.context.shutdown()
-        return 0
 
     def _run_self_test(self) -> None:
         """Exercise the full core pipeline: registry -> tasks -> result -> export."""

@@ -50,6 +50,14 @@ class TaskSettings(BaseModel):
     default_timeout: float = Field(default=30.0, gt=0.0)
 
 
+class StartupSettings(BaseModel):
+    """Settings applied during application startup."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    load_plugins: bool = False
+
+
 class AppConfig(BaseModel):
     """Complete runtime configuration."""
 
@@ -60,6 +68,7 @@ class AppConfig(BaseModel):
     window: WindowSettings = Field(default_factory=WindowSettings)
     logging: LoggingSettings = Field(default_factory=LoggingSettings)
     tasks: TaskSettings = Field(default_factory=TaskSettings)
+    startup: StartupSettings = Field(default_factory=StartupSettings)
     recent_tools: list[str] = Field(default_factory=list, max_length=20)
 
 
@@ -67,6 +76,7 @@ _NESTED_SECTIONS: dict[str, type[BaseModel]] = {
     "window": WindowSettings,
     "logging": LoggingSettings,
     "tasks": TaskSettings,
+    "startup": StartupSettings,
 }
 
 
@@ -116,8 +126,9 @@ class ConfigManager:
     def update(self, **changes: Any) -> AppConfig:
         """Apply top-level changes and persist them immediately."""
         updated = self.load().model_copy(update=changes)
-        self.save(updated)
-        return updated
+        validated = updated.model_validate(updated.model_dump(mode="python"))
+        self.save(validated)
+        return validated
 
     def _load_defaults(self) -> AppConfig:
         if self._defaults_path is None or not self._defaults_path.exists():
