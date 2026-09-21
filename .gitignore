@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.venv/
+venv/
+
+# Test / lint / coverage artifacts
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# PyInstaller output
+build/
+dist/
+
+# Runtime data (user generated, never committed)
+logs/*.log
+logs/*.log.*
+data/*.db
+data/*.sqlite*
+data/config.json
+
+# IDE / OS noise
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local experiment scratch space
+work/
+outputs/
+

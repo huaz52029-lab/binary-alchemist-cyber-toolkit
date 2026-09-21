@@ -1,0 +1,21 @@
+{
+  "theme": "dark",
+  "language": "zh_CN",
+  "window": {
+    "width": 1280,
+    "height": 800,
+    "x": null,
+    "y": null,
+    "maximized": false
+  },
+  "logging": {
+    "level": "INFO",
+    "console": true
+  },
+  "tasks": {
+    "max_workers": 8,
+    "default_timeout": 30.0
+  },
+  "recent_tools": []
+}
+
