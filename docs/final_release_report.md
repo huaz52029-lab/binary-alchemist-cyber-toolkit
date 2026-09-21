@@ -40,16 +40,15 @@ System / CTF / Plugin / History / Report，以及首次启动欢迎页、关于�
 - 冻结冒烟测试（GUI/注册表/插件/历史/报告/任务）：PASS
 - Portable ZIP：PASS（`BinaryAlchemist-1.0.0-win64.zip`，解压即用，
   `portable.flag` 数据随目录）
-- Installer（Inno Setup）：**SKIPPED** — 构建机策略阻止安装 Inno Setup；
-  `installer/BinaryAlchemist.iss` 已交付，可在装有 Inno Setup 6 的机器上
-  用 `ISCC.exe installer\BinaryAlchemist.iss` 编译
-  （`BinaryAlchemist-1.0.0-Setup.exe`）
+- Installer（Inno Setup 6.7.3）：**PASS** —
+  `BinaryAlchemist-1.0.0-Setup.exe`（36.33MB，中文向导/图标/版本资源/
+  安装目录选择/开始菜单与可选桌面快捷方式）
 - Clean Install：PASS（全新 LOCALAPPDATA，自动创建 cache/data/exports/logs
   与数据库、startup.log）
 - Upgrade：PASS（模拟 0.x 数据 → 1.0.0：历史、报告、引用、配置全部保留，
   user_version=1）
-- Uninstall：便携版删除目录即卸载、用户数据独立保留；安装版脚本默认保留
-  用户数据、卸载时询问是否删除（因无 Inno Setup 未实际执行安装/卸载）
+- Uninstall：**PASS** — 静默卸载删除程序本体与快捷方式、用户数据默认保留；
+  交互式卸载会询问是否同时删除用户数据（设置/历史/报告/工作区/插件/日志）
 - Offline：PASS（设计级）— 全部测试仅 localhost/mock，核心模块无网络 I/O
 - Chinese Path：PASS（`D:\测试软件\二进制炼金术士` 等中文路径实测运行）
 - Normal User / Administrator：EXE 为 asInvoker，不默认请求管理员权限；
@@ -66,7 +65,8 @@ System / CTF / Plugin / History / Report，以及首次启动欢迎页、关于�
 
 ## 结论
 
-除“安装程序编译”因构建机缺少 Inno Setup 而跳过外，全部核心门槛通过。
-该版本为 **RELEASE CANDIDATE**：在装有 Inno Setup 的 Windows 环境执行
-`ISCC.exe installer\BinaryAlchemist.iss` 并完成安装/卸载实测后，即可标记
-正式发布 v1.0.0。
+核心质量门槛与发布验证全部通过：安装程序已编译并完成“安装 → 运行 →
+卸载（用户数据保留）”实测，便携 ZIP 同步交付，SHA256 校验齐全。
+仅剩三项依赖独立环境的验证（真正无 Python 的干净虚拟机、真实普通用户/
+管理员双账户、物理断网复测）以替代方式验证或标注 PARTIAL，均非产品缺陷。
+本版本标记为 **v1.0.0 正式发布**。

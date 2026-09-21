@@ -10,7 +10,7 @@
 - [x] Clean Install（全新 LOCALAPPDATA 冒烟通过）
 - [x] Portable（ZIP 解压运行 + portable.flag 数据随目录）
 - [x] Upgrade（0.x 数据 → 1.0.0 保留历史/报告）
-- [x] Uninstall（便携删除目录，用户数据保留；安装版脚本默认保留、可选删除）
+- [x] Uninstall（安装版静默卸载实测：程序删除、用户数据保留；便携版同理）
 - [x] Chinese Path（中文安装目录运行正常）
 - [x] Offline（设计级：测试仅 localhost；核心模块无网络 I/O）
 - [x] Normal User（asInvoker，无管理员要求）

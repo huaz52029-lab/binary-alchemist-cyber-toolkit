@@ -35,7 +35,7 @@ VersionInfoDescription=Network Security Toolkit
 VersionInfoCompany={#MyAppPublisher}
 
 [Languages]
-Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
+Name: "chinesesimplified"; MessagesFile: "Languages\ChineseSimplified.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "创建桌面快捷方式"; GroupDescription: "附加任务："; Flags: unchecked
@@ -55,6 +55,8 @@ Filename: "{app}\{#MyAppExeName}"; Description: "启动 {#MyAppName}"; Flags: no
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
   if CurUninstallStep = usPostUninstall then begin
+    if UninstallSilent then
+      exit;
     if MsgBox(
       '是否同时删除用户数据？' + #13#10 +
       '这将删除设置、任务历史、报告、CTF 工作区、插件与日志。',
