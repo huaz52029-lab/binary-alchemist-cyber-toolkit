@@ -96,6 +96,30 @@ Web security module (Web安全):
 > and ships no exploitation, payload generation, credential brute-force or
 > stealth capabilities. Sensitive headers are redacted by default.
 
+File analysis module (文件分析):
+
+- **文件信息** (`file_analysis.file_info`): size, timestamps, attributes and
+  magic-byte type detection with extension-mismatch notices.
+- **文件 Hash** (`file_analysis.hashes`): MD5/SHA1/SHA2 in one streaming pass.
+- **字符串提取** (`file_analysis.strings`): streaming ASCII/UTF-8/UTF-16LE
+  strings with keyword hints.
+- **文件熵分析** (`file_analysis.entropy`): Shannon entropy (0-8), with PE
+  section-level entropy.
+- **Hex Viewer** (`file_analysis.hex_viewer`): paged read-only hex dump with
+  offset jump and ASCII/hex search.
+- **PE 分析** (`file_analysis.pe_analysis`): DOS/NT headers, sections, imports,
+  exports, resources and overlay.
+- **IOC 候选提取** (`file_analysis.ioc`): candidate IPs/URLs/domains/emails/
+  paths/registry keys.
+- **文件安全分析** (`file_analysis.analyzer`): composite static analysis.
+- **批量文件分析** (`file_analysis.batch`): bounded batch triage over files or
+  directories with progress and cancellation.
+
+> This module is strictly static: it reads, parses and displays files and never
+> executes samples, loads DLLs, runs scripts or uploads files/hashes. High
+> entropy, keyword hits, candidate IOCs and PE structure notes are analysis
+> hints, never malware verdicts.
+
 > MD5 is a one-way hash function. This tool searches user-provided candidate
 > spaces for a matching value; it never queries online services, uploads hashes
 > or performs online authentication brute-force.

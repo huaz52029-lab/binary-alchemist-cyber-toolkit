@@ -13,6 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Plugin management UI and report center.
 - PyInstaller onedir / installer packaging.
 
+## [0.8.0] - 2026-09-21
+
+### Added
+
+- File analysis module: file info/type detection, single-pass multi-hash,
+  streaming strings (ASCII/UTF-8/UTF-16LE), Shannon entropy (file + PE
+  sections), paged read-only hex viewer with search, PE analysis (headers,
+  sections, imports, exports, resources, overlay), candidate IOC extraction,
+  composite analyzer and bounded batch analysis.
+- Infrastructure filesystem adapters (streaming reader, magic-byte detector)
+  and multi-digest streaming hashing.
+- File drag-and-drop on tool pages (path only, never executed).
+- Strict static-analysis boundary: no sample execution, no uploads; findings
+  are calibrated facts/heuristics.
+
 ## [0.7.0] - 2026-09-21
 
 ### Added

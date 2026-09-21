@@ -28,6 +28,15 @@ def register_builtin_tools(registry: ToolRegistry) -> None:
     from modules.encoding.rot47 import Rot47Tool
     from modules.encoding.unicode import UnicodeTool
     from modules.encoding.url import UrlTool
+    from modules.file_analysis.analyzer import FileAnalyzerTool
+    from modules.file_analysis.batch import BatchAnalysisTool
+    from modules.file_analysis.entropy import FileEntropyTool
+    from modules.file_analysis.file_info import FileInfoTool
+    from modules.file_analysis.hashes import FileHashesTool
+    from modules.file_analysis.hex_viewer import FileHexViewerTool
+    from modules.file_analysis.ioc import FileIocTool
+    from modules.file_analysis.pe_analysis import PeAnalysisTool
+    from modules.file_analysis.strings import FileStringsTool
     from modules.network.dns import DnsTool
     from modules.network.ip_info import IPInfoTool
     from modules.network.network_interfaces import NetworkInterfacesTool
@@ -70,6 +79,15 @@ def register_builtin_tools(registry: ToolRegistry) -> None:
     registry.register(SecurityHeadersTool())
     registry.register(TlsInfoTool())
     registry.register(HttpAnalysisTool())
+    registry.register(FileInfoTool())
+    registry.register(FileHashesTool())
+    registry.register(FileStringsTool())
+    registry.register(FileEntropyTool())
+    registry.register(FileHexViewerTool())
+    registry.register(PeAnalysisTool())
+    registry.register(FileIocTool())
+    registry.register(FileAnalyzerTool())
+    registry.register(BatchAnalysisTool())
 
 
 __all__ = ["register_builtin_tools"]

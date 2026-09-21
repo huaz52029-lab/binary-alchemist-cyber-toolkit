@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from PySide6.QtCore import Signal
+from PySide6.QtGui import QDragEnterEvent, QDropEvent
 from PySide6.QtWidgets import (
     QComboBox,
     QFileDialog,
@@ -101,6 +102,7 @@ class ToolPage(QWidget):
         self._form: QFormLayout | None = None
         self._row_meta: list[tuple[Any, int]] = []
         self._logger = logging.getLogger("ui.tool")
+        self.setAcceptDrops(True)
 
         title = QLabel(definition.name, self)
         title.setObjectName("toolTitle")
@@ -261,6 +263,25 @@ class ToolPage(QWidget):
         if isinstance(parameter.default, str):
             field.set_text(parameter.default)
         return field
+
+    def dragEnterEvent(self, event: QDragEnterEvent) -> None:
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+        else:
+            super().dragEnterEvent(event)
+
+    def dropEvent(self, event: QDropEvent) -> None:
+        """Accept dropped local files; they are analyzed, never executed."""
+        for url in event.mimeData().urls():
+            if not url.isLocalFile():
+                continue
+            file_path = url.toLocalFile()
+            for widget in self._fields.values():
+                if isinstance(widget, _FileInput):
+                    widget.set_text(file_path)
+                    event.acceptProposedAction()
+                    return
+        super().dropEvent(event)
 
     def _connect_field_changes(self, widget: QWidget) -> None:
         if isinstance(widget, CommandInput):

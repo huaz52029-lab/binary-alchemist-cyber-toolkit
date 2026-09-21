@@ -72,6 +72,10 @@ plugins = ["pydantic.mypy"]
 files = ["core", "ui", "app.py", "main.py"]
 exclude = ["build", "dist"]
 
+[[tool.mypy.overrides]]
+module = ["pefile"]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"

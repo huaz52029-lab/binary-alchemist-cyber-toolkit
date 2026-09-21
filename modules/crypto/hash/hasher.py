@@ -37,3 +37,27 @@ def hash_file(
             if on_progress is not None and size > 0:
                 on_progress(min(100.0, handle.tell() / size * 100.0))
     return digest.hexdigest()
+
+
+def hash_file_multi(
+    path: Path,
+    algorithms: tuple[str, ...],
+    *,
+    is_cancelled: Callable[[], bool] | None = None,
+    on_progress: Callable[[float], None] | None = None,
+) -> dict[str, str]:
+    """Compute several digests in a single streaming pass over the file."""
+    digests = {algorithm: hashlib.new(algorithm.lower()) for algorithm in algorithms}
+    size = path.stat().st_size
+    with path.open("rb") as handle:
+        while True:
+            if is_cancelled is not None and is_cancelled():
+                raise TaskCancelledError()
+            chunk = handle.read(CHUNK_SIZE)
+            if not chunk:
+                break
+            for digest in digests.values():
+                digest.update(chunk)
+            if on_progress is not None and size > 0:
+                on_progress(min(100.0, handle.tell() / size * 100.0))
+    return {algorithm: digest.hexdigest() for algorithm, digest in digests.items()}
