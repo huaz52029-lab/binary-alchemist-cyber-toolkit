@@ -1,0 +1,24 @@
+# Release Checklist
+
+- [x] Version（单一来源：pyproject.toml = 1.0.0）
+- [x] Tests（582 passed）
+- [x] Ruff
+- [x] MyPy（strict）
+- [x] Coverage（core 93.5%，总体 87.6%）
+- [x] Security Review（无 eval/exec/shell=True/硬编码凭据/测试目标）
+- [x] PyInstaller（onedir，图标 + 版本资源）
+- [x] Clean Install（全新 LOCALAPPDATA 冒烟通过）
+- [x] Portable（ZIP 解压运行 + portable.flag 数据随目录）
+- [x] Upgrade（0.x 数据 → 1.0.0 保留历史/报告）
+- [x] Uninstall（便携删除目录，用户数据保留；安装版脚本默认保留、可选删除）
+- [x] Chinese Path（中文安装目录运行正常）
+- [x] Offline（设计级：测试仅 localhost；核心模块无网络 I/O）
+- [x] Normal User（asInvoker，无管理员要求）
+- [x] Administrator（无冲突）
+- [x] Database Migration（版本化迁移，旧数据保留）
+- [x] Plugin（metadata-only 扫描，示例插件不在发布包默认启用）
+- [x] History（分页、搜索、删除保护）
+- [x] Reports（模板、引用、导出）
+- [x] SHA256（SHA256SUMS.txt）
+- [x] README（安装 A/B、FAQ、安全边界）
+- [x] Release Notes（release/RELEASE_NOTES.md）

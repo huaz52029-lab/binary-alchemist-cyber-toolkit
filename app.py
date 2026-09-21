@@ -11,13 +11,19 @@ import logging
 import sys
 from collections.abc import Callable, Sequence
 from pathlib import Path
+from types import TracebackType
+from typing import TYPE_CHECKING
 
 from core import APP_DISPLAY_NAME, APP_NAME, APP_VERSION
 from core.app_context import AppContext
+from core.crash import write_crash_report
 from core.exceptions import TaskError
 from core.result import ResultStatus, ToolResult
 from core.task import ExecutionContext, TaskStatus
 from modules import register_builtin_tools
+
+if TYPE_CHECKING:
+    from PySide6.QtWidgets import QWidget
 
 
 class Application:
@@ -110,13 +116,45 @@ class Application:
         app.setApplicationName(APP_NAME)
         app.setApplicationDisplayName(APP_DISPLAY_NAME)
         app.setApplicationVersion(APP_VERSION)
+        self._install_crash_hook()
         try:
             theme_manager = ThemeManager(theme=self.context.config.theme)
             window = MainWindow(self.context, theme_manager)
             window.show()
+            self._show_welcome_once(window)
             return app.exec()
         finally:
             self.context.shutdown()
+
+    def _show_welcome_once(self, parent: QWidget) -> None:
+        """Show the first-run dialog exactly once per data directory."""
+        from ui.welcome_dialog import WelcomeDialog
+
+        marker = self.context.paths.data / "welcome.done"
+        if marker.is_file():
+            return
+        WelcomeDialog(self.context.paths.data, parent).exec()
+        try:
+            marker.write_text(APP_VERSION, encoding="utf-8")
+        except OSError:
+            self._logger.warning("Could not persist welcome marker")
+
+    def _install_crash_hook(self) -> None:
+        """Route unhandled GUI-thread exceptions into ``logs/crash.log``."""
+        default_hook = sys.excepthook
+
+        def hook(
+            exc_type: type[BaseException],
+            exc: BaseException,
+            tb: TracebackType | None,
+        ) -> None:
+            try:
+                write_crash_report(exc_type, exc, tb)
+            except Exception:
+                self._logger.exception("Failed to write crash report")
+            default_hook(exc_type, exc, tb)
+
+        sys.excepthook = hook
 
     def _run_self_test(self) -> None:
         """Exercise the full core pipeline: registry -> tasks -> result -> export."""

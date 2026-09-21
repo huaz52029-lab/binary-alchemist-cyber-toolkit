@@ -28,14 +28,15 @@ built around clean architecture, a plugin system and a unified task/result model
 
 ## Project status
 
-Phases 0-13 are complete: core, GUI framework, network, encoding, crypto, web,
-file analysis, system security, CTF workbench, plugin system, task history,
-report center, a full-project quality pass (unit/integration/regression/stress
-tests, coverage gates, static analysis and PyInstaller onedir packaging) and a
-performance/engineering hardening pass. The current quality status is summarized in
+Phases 0-14 are complete and the project has reached **v1.0.0**: core, GUI
+framework, network, encoding, crypto, web, file analysis, system security, CTF
+workbench, plugin system, task history, report center, a full-project quality
+pass, a performance/engineering hardening pass and formal release packaging
+(onedir bundle, portable ZIP and an Inno Setup installer script). The current
+quality status is summarized in
 [docs/quality_report.md](docs/quality_report.md); known leftovers are tracked
-in [docs/known_issues.md](docs/known_issues.md). The build is in release
-candidate shape (recommended tag `v1.0.0-rc1`, not yet applied); see
+in [docs/known_issues.md](docs/known_issues.md); the release checklist is
+[docs/release_checklist.md](docs/release_checklist.md). See
 [CHANGELOG.md](CHANGELOG.md) and the phase plan in [AGENTS.md](AGENTS.md).
 
 ## Available tools
@@ -240,6 +241,22 @@ The GUI starts on a dark professional console theme with a left navigation tree,
 dashboard statistics, live task/log panels and a settings dialog. Use
 `--plugins` to load plugins from the plugins directory at startup.
 
+## Installation
+
+No Python installation is required.
+
+- **方式 A：安装程序** — run `BinaryAlchemist-1.0.0-Setup.exe` (built with the
+  Inno Setup script in `installer/BinaryAlchemist.iss`). The program installs
+  to a directory of your choice, creates Start Menu shortcuts and keeps user
+  data under `%LOCALAPPDATA%\BinaryAlchemist`. Uninstall keeps user data by
+  default and asks before deleting it.
+- **方式 B：便携版** — unzip `BinaryAlchemist-1.0.0-win64.zip` anywhere and run
+  `BinaryAlchemist.exe`. The portable package contains a `portable.flag`, so
+  settings, history and reports live next to the executable.
+
+Both packages are released with SHA256 checksums (`SHA256SUMS.txt`) and
+release notes (`RELEASE_NOTES.md`).
+
 Useful commands:
 
 ```powershell
@@ -259,15 +276,17 @@ Run the commands with the project virtual environment interpreter
 ```text
 main.py / app.py        thin entry point + application composition root
 core/                   domain models, registry, task manager, config, logging, exporters
-ui/                     PySide6 widgets (later phase)
-modules/                security tool modules, grouped by category (later phases)
-infrastructure/         adapters: network, filesystem, system providers (later phases)
+ui/                     PySide6 widgets and dialogs
+modules/                security tool modules, grouped by category
+infrastructure/         adapters: network, filesystem, system providers
 configs/default.json    shipped default configuration
 data/                   SQLite database + user config (runtime)
 logs/                   app.log / error.log / security.log (runtime)
 plugins/                user plugins (plugin.json + main.py)
 tests/                  pytest suite, no external-network dependencies
-scripts/                lint.py / test.py / build.py
+scripts/                lint.py / test.py / build.py / build_release.py / bench.py
+installer/              Inno Setup script
+release/                release artifacts (generated)
 ```
 
 ## Documentation
@@ -296,6 +315,18 @@ files are maintained: `logs/app.log` (all levels), `logs/error.log` (ERROR+),
 `logs/security.log` (security-relevant events). Log records carry task and tool ids
 when available. `print` is forbidden in business code.
 
+## FAQ
+
+- **需要管理员权限吗？** 正常运行不需要（EXE 为 asInvoker）；安装到
+  Program Files 时安装程序会按需请求管理员权限。
+- **数据存在哪里？** 安装版在 `%LOCALAPPDATA%\BinaryAlchemist`；便携版在
+  程序目录旁；可用 `CYBERTOOLKIT_HOME` 重定位。
+- **会联网上传数据吗？** 不会。所有分析本地完成，也没有自动更新。
+- **为什么 MD5 无法“解密”？** MD5 是单向哈希；MD5 逆向工具只在用户提供的
+  候选空间（字典/有限字符集）中寻找匹配值。
+- **如何开发插件？** 见 [docs/plugin_api.md](docs/plugin_api.md) 与
+  `python scripts/create_plugin.py <name>`。
+
 ## Testing
 
 ```powershell
@@ -313,6 +344,7 @@ overall business code.
 
 ```powershell
 python scripts/build.py
+python scripts/build_release.py   # lint + typecheck + pytest + coverage + build + ZIP + hash
 ```
 
 Produces a self-contained onedir bundle at `dist/BinaryAlchemist/`

@@ -76,6 +76,8 @@ class SettingsDialog(QDialog):
         )
         buttons.accepted.connect(self._apply)
         buttons.rejected.connect(self.reject)
+        about_button = QPushButton("关于", self)
+        about_button.clicked.connect(self._show_about)
 
         layout = QVBoxLayout(self)
         layout.addLayout(form)
@@ -83,6 +85,13 @@ class SettingsDialog(QDialog):
             layout.addWidget(self._build_maintenance_group(maintenance))
         layout.addWidget(note)
         layout.addWidget(buttons)
+        layout.addWidget(about_button)
+
+    @staticmethod
+    def _show_about() -> None:
+        from ui.about_dialog import AboutDialog
+
+        AboutDialog().exec()
 
     def _build_maintenance_group(self, maintenance: DatabaseMaintenance) -> QWidget:
         group = QWidget(self)

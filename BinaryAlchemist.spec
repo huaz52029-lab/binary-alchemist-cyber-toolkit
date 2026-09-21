@@ -47,6 +47,8 @@ def _filter_binaries(binaries):
 datas = [
     ("configs", "configs"),
     ("resources", "resources"),
+    ("docs/third_party_licenses.md", "docs"),
+    ("LICENSE", "docs"),
 ]
 datas += copy_metadata("binary-alchemist-cyber-toolkit")
 
@@ -84,6 +86,8 @@ exe = EXE(
     strip=False,
     upx=False,
     console=False,
+    icon="resources/icons/app.ico",
+    version="resources/version_info.txt",
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,

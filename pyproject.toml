@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "binary-alchemist-cyber-toolkit"
-version = "0.14.0"
+version = "1.0.0"
 description = "Binary Alchemist Cyber Toolkit - a modular, plugin-based desktop security analysis platform."
 readme = "README.md"
 requires-python = ">=3.13,<3.15"
@@ -79,6 +79,10 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = ["win32con", "win32service", "win32serviceutil"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["PyInstaller"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

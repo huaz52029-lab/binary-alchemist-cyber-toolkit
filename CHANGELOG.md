@@ -9,7 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned
 
-- Installer packaging and reports/history UX refinements.
+- Reports/history UX refinements, optional self-update, i18n beyond Chinese.
+
+## [1.0.0] - 2026-09-21
+
+### Added
+
+- Formal release packaging: versioned onedir bundle, portable ZIP with
+  `portable.flag`, Inno Setup script (`installer/BinaryAlchemist.iss`) and a
+  one-command release pipeline (`scripts/build_release.py`: lint, typecheck,
+  pytest, coverage gate, build, frozen smoke test, ZIP, SHA256, release notes).
+- Windows app icon (`app.ico`, regenerable via `scripts/build_icon.py`) and
+  EXE version resources (1.0.0, product/file metadata).
+- First-run welcome dialog, About dialog, top-level crash handler
+  (`logs/crash.log`, `logs/startup.log`) with a friendly error dialog.
+- User data layout extended with `cache/` and `exports/` directories.
+- Release notes, release checklist and final release report docs.
+
+### Changed
+
+- Version unified at 1.0.0 (pyproject.toml is the single source).
 
 ## [0.14.0] - 2026-09-21
 

@@ -11,11 +11,13 @@ venv/
 .mypy_cache/
 .ruff_cache/
 .coverage
+coverage.json
 htmlcov/
 
 # PyInstaller output
 build/
 dist/
+release/
 
 # Runtime data (user generated, never committed)
 logs/*.log

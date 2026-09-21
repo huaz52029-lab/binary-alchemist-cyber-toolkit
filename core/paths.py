@@ -49,6 +49,8 @@ class RuntimePaths:
     configs: Path
     data: Path
     logs: Path
+    cache: Path
+    exports: Path
     plugins: Path
     default_config: Path
     user_config: Path
@@ -61,6 +63,8 @@ class RuntimePaths:
             configs=root / "configs",
             data=root / "data",
             logs=root / "logs",
+            cache=root / "cache",
+            exports=root / "exports",
             plugins=root / "plugins",
             default_config=root / "configs" / "default.json",
             user_config=root / "data" / "config.json",
@@ -68,5 +72,5 @@ class RuntimePaths:
 
     def ensure_runtime_dirs(self) -> None:
         """Create writable runtime directories if they do not exist yet."""
-        for directory in (self.data, self.logs):
+        for directory in (self.data, self.logs, self.cache, self.exports):
             directory.mkdir(parents=True, exist_ok=True)
