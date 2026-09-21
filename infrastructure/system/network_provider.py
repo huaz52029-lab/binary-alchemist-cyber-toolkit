@@ -66,3 +66,47 @@ class NetworkInterfaceProvider:
                 )
             )
         return sorted(interfaces, key=lambda item: item.name)
+
+
+@dataclass(frozen=True, slots=True)
+class ConnectionInfo:
+    protocol: str
+    local_address: str
+    local_port: int
+    remote_address: str
+    remote_port: int
+    status: str
+    pid: int | None
+    process_name: str
+
+
+class ConnectionProvider:
+    """Lists TCP/UDP connections, tolerating missing PIDs or process lookups."""
+
+    def list_connections(self) -> list[ConnectionInfo]:
+        import psutil
+
+        names: dict[int, str] = {}
+        for process in psutil.process_iter(["pid", "name"]):
+            try:
+                names[int(process.info["pid"])] = str(process.info["name"])
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        rows: list[ConnectionInfo] = []
+        for connection in psutil.net_connections(kind="inet"):
+            laddr = connection.laddr
+            raddr = connection.raddr
+            pid = connection.pid
+            rows.append(
+                ConnectionInfo(
+                    protocol="TCP" if connection.type == 1 else "UDP",
+                    local_address=str(laddr.ip) if laddr else "",
+                    local_port=int(laddr.port) if laddr else 0,
+                    remote_address=str(raddr.ip) if raddr else "",
+                    remote_port=int(raddr.port) if raddr else 0,
+                    status=connection.status or "NONE",
+                    pid=pid,
+                    process_name=names.get(pid, "Unknown") if pid is not None else "Unknown",
+                )
+            )
+        return rows

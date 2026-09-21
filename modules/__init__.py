@@ -43,6 +43,16 @@ def register_builtin_tools(registry: ToolRegistry) -> None:
     from modules.network.ping import PingTool
     from modules.network.tcp_connect import TCPConnectTool
     from modules.network.tcp_scan import TcpScanTool
+    from modules.system.analyzer import SystemAnalyzerTool
+    from modules.system.connections import ConnectionsTool
+    from modules.system.environment import EnvironmentTool
+    from modules.system.process_detail import ProcessDetailTool
+    from modules.system.processes import ProcessesTool
+    from modules.system.resource_monitor import ResourceMonitorTool
+    from modules.system.services import ServicesTool
+    from modules.system.startup import StartupTool
+    from modules.system.system_info import SystemInfoTool
+    from modules.system.users import UsersTool
     from modules.web.cookie_analysis import CookieAnalysisTool
     from modules.web.http_analysis import HttpAnalysisTool
     from modules.web.http_headers import HttpHeadersTool
@@ -88,6 +98,16 @@ def register_builtin_tools(registry: ToolRegistry) -> None:
     registry.register(FileIocTool())
     registry.register(FileAnalyzerTool())
     registry.register(BatchAnalysisTool())
+    registry.register(SystemInfoTool())
+    registry.register(ProcessesTool())
+    registry.register(ProcessDetailTool())
+    registry.register(ConnectionsTool())
+    registry.register(ServicesTool())
+    registry.register(StartupTool())
+    registry.register(UsersTool())
+    registry.register(EnvironmentTool())
+    registry.register(ResourceMonitorTool())
+    registry.register(SystemAnalyzerTool())
 
 
 __all__ = ["register_builtin_tools"]

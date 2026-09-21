@@ -76,6 +76,10 @@ exclude = ["build", "dist"]
 module = ["pefile"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = ["win32con", "win32service", "win32serviceutil"]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"

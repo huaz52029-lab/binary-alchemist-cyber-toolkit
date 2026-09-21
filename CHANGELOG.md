@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Plugin management UI and report center.
 - PyInstaller onedir / installer packaging.
 
+## [0.9.0] - 2026-09-21
+
+### Added
+
+- System security module: system info, processes, process detail, connections,
+  Windows services, startup entries, users, environment (sensitive-value
+  redaction), resource monitoring and a composite system analyzer with partial
+  success.
+- Read-only system providers (psutil + pywin32 + winreg KEY_READ): per-field
+  access-denied degradation, sensitive-value masking and no mutation
+  capabilities whatsoever.
+
 ## [0.8.0] - 2026-09-21
 
 ### Added

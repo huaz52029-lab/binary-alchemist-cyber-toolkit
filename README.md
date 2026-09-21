@@ -120,6 +120,29 @@ File analysis module (文件分析):
 > entropy, keyword hits, candidate IOCs and PE structure notes are analysis
 > hints, never malware verdicts.
 
+System security module (系统安全):
+
+- **系统信息** (`system.system_info`): OS/CPU/memory/disk/boot-time overview.
+- **进程查看** (`system.processes`): read-only process enumeration with search;
+  per-process failures never break the list.
+- **进程详细信息** (`system.process_detail`): threads, command line, cwd and
+  environment summary for one PID.
+- **网络连接** (`system.connections`): TCP/UDP connections and listening ports.
+- **Windows 服务** (`system.services`): read-only service status, start type and
+  image-path notes.
+- **启动项分析** (`system.startup`): read-only Run/RunOnce registry keys and
+  startup folders.
+- **用户与会话** (`system.users`) and **环境信息** (`system.environment`, with
+  sensitive-value redaction).
+- **资源监控** (`system.resource_monitor`): sampled CPU/memory/network trends.
+- **系统安全分析** (`system.analyzer`): composite read-only summary with
+  partial-success support.
+
+> This module is strictly read-only: it never terminates processes, stops or
+> creates services, modifies the registry/startup items/accounts/firewall, or
+> uploads any collected data. Permission limits degrade individual fields, not
+> the whole analysis.
+
 > MD5 is a one-way hash function. This tool searches user-provided candidate
 > spaces for a matching value; it never queries online services, uploads hashes
 > or performs online authentication brute-force.
