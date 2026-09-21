@@ -5,7 +5,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
 from enum import StrEnum
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -84,6 +84,7 @@ class ToolDefinition(BaseModel):
     advanced: bool = False
     enabled: bool = True
     parameters: list[ToolParameter] = Field(default_factory=list)
+    page: Literal["tool", "encoding"] = "tool"
 
     @model_validator(mode="after")
     def _id_matches_category(self) -> ToolDefinition:

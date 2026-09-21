@@ -27,6 +27,7 @@ from core.tool_definition import ToolCategory
 from ui.bridge import LogBridge, TaskBridge
 from ui.category_page import CategoryPage
 from ui.dashboard import Dashboard
+from ui.encoding_page import EncodingToolPage
 from ui.icons import IconProvider
 from ui.log_panel import LogPanel
 from ui.navigation import (
@@ -62,7 +63,7 @@ class MainWindow(QMainWindow):
         self._theme = theme_manager or ThemeManager(theme=context.config.theme)
         self._logger = logging.getLogger("ui.main")
         self._icons = IconProvider(context.paths.root / "resources" / "icons")
-        self._tool_pages: dict[str, ToolPage] = {}
+        self._tool_pages: dict[str, QWidget] = {}
         self._page_index: dict[str, int] = {}
 
         self.setWindowTitle(f"{APP_DISPLAY_NAME} · Cyber Toolkit")
@@ -186,16 +187,28 @@ class MainWindow(QMainWindow):
             return
         page = self._tool_pages.get(tool_id)
         if page is None:
-            page = ToolPage(
-                definition,
-                self._theme,
-                self._log_bridge,
-                tool=self._context.tool_registry.get(tool_id),
-                task_manager=self._context.task_manager,
-                task_bridge=self._task_bridge,
-                exporter_manager=self._context.exporter_manager,
-            )
-            page.run_requested.connect(self._on_run_requested)
+            tool = self._context.tool_registry.get(tool_id)
+            if definition.page == "encoding":
+                page = EncodingToolPage(
+                    definition,
+                    self._theme,
+                    self._log_bridge,
+                    tool=tool,
+                    task_manager=self._context.task_manager,
+                    task_bridge=self._task_bridge,
+                    exporter_manager=self._context.exporter_manager,
+                )
+            else:
+                page = ToolPage(
+                    definition,
+                    self._theme,
+                    self._log_bridge,
+                    tool=tool,
+                    task_manager=self._context.task_manager,
+                    task_bridge=self._task_bridge,
+                    exporter_manager=self._context.exporter_manager,
+                )
+                page.run_requested.connect(self._on_run_requested)
             self._stack.addWidget(page)
             self._tool_pages[tool_id] = page
         self._stack.setCurrentWidget(page)

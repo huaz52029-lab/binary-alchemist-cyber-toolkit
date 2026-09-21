@@ -52,13 +52,37 @@ Network security module (网络安全):
 
 Cryptography module (密码学):
 
+- **Hash 计算器** (`crypto.hash`): MD5/SHA1/SHA224/SHA256/SHA384/SHA512 over
+  text (UTF-8) or files (chunked), with case-insensitive comparison.
 - **MD5 哈希逆向分析器** (`crypto.md5_reverse`): offline candidate verification,
   local dictionary matching and bounded charset brute-force search for MD5
   hashes; also exposed in the CTF category as MD5 Hash 分析 (`ctf.md5_reverse`).
+- **XOR 工具** (`crypto.xor`): single-byte, brute-force scoring, repeating-key
+  and equal-length hex XOR.
+- **JWT 解析器** (`crypto.jwt`): offline header/payload decoding and claim
+  analysis (no key guessing, no attacks).
+- **RSA 辅助** (`crypto.rsa_helper`): n/e/d/p/q relationship analysis, φ(n) and
+  d computation, plus PEM public key parsing.
+
+Encoding module (编码转换):
+
+- Base64 / Base32 / Base58 / Hex / Binary / URL Encode / Unicode / ROT13 / ROT47
+  / HTML Entity (`encoding.*`): two-way text transforms with a shared workspace
+  page (input, encode/decode, output, copy, swap, clear).
+
+CTF module (CTF 工具):
+
+- **Auto Decode** (`ctf.auto_decode`): heuristic candidate detection across
+  Base64/Base32/Base58/Hex/Binary/URL/Unicode/ROT13/ROT47/JWT, ranked by
+  confidence and explicitly labeled as non-deterministic.
 
 > MD5 is a one-way hash function. This tool searches user-provided candidate
 > spaces for a matching value; it never queries online services, uploads hashes
 > or performs online authentication brute-force.
+
+> All encoding and cryptography tools run fully offline for security learning,
+> CTF practice, data analysis and authorized testing; they never upload input
+> text, tokens, hashes or files to any service.
 
 > Network scanning is intended for local machines, lab environments, CTF
 > practice, training ranges and **explicitly authorized** testing only. It

@@ -13,6 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Plugin management UI and report center.
 - PyInstaller onedir / installer packaging.
 
+## [0.6.0] - 2026-09-21
+
+### Added
+
+- Encoding module (10 tools): Base64, Base32, Base58 (pure Python), Hex, Binary,
+  URL, Unicode escape, ROT13, ROT47 and HTML Entity, sharing one EncodingTool
+  base and one EncodingToolPage workspace (encode/decode, copy, swap, clear).
+- Crypto tools: Hash calculator (text/file, chunked, compare), XOR (single-byte,
+  scored brute-force, repeating-key, hex XOR), JWT decoder/analyzer and RSA
+  parameter/PEM helper.
+- CTF Auto Decode: heuristic multi-encoding candidates with confidence levels.
+- Declarative ``page`` hint on ToolDefinition and shared Base64URL helpers.
+- Offline-only behavior: no network calls, no secret logging; calibrated
+  findings distinguish facts from heuristics.
+
 ## [0.5.0] - 2026-09-21
 
 ### Added
