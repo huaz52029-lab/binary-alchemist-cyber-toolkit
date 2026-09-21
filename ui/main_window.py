@@ -39,6 +39,7 @@ from ui.navigation import (
     Navigation,
 )
 from ui.placeholder_page import PlaceholderPage
+from ui.plugin_page import PluginPage
 from ui.settings_dialog import SettingsDialog
 from ui.task_panel import TaskPanel
 from ui.theme import ThemeManager
@@ -79,11 +80,13 @@ class MainWindow(QMainWindow):
         self._stack = QStackedWidget(self)
         self._dashboard = Dashboard(context, self._theme)
         self._task_panel = TaskPanel(self)
+        self._plugin_page = PluginPage(context.plugin_manager)
+        self._plugin_page.open_tool_requested.connect(self._open_tool)
         pages: dict[str, QWidget] = {
             PAGE_DASHBOARD: self._dashboard,
             PAGE_HISTORY: self._task_panel,
             PAGE_REPORTS: PlaceholderPage("报告中心", "统一报告导出将在后续阶段提供。"),
-            PAGE_PLUGINS: PlaceholderPage("插件", "插件管理界面将在后续阶段提供。"),
+            PAGE_PLUGINS: self._plugin_page,
         }
         for category in ToolCategory:
             category_page = CategoryPage(
@@ -180,6 +183,8 @@ class MainWindow(QMainWindow):
         self._stack.setCurrentIndex(index)
         if page_id == PAGE_DASHBOARD:
             self._dashboard.refresh()
+        if page_id == PAGE_PLUGINS:
+            self._plugin_page.refresh()
 
     def _open_tool(self, tool_id: str) -> None:
         definition = self._context.tool_registry.definition_of(tool_id)

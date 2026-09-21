@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Plugin management UI and report center.
 - PyInstaller onedir / installer packaging.
 
+## [0.11.0] - 2026-09-21
+
+### Added
+
+- Plugin system: Plugin SDK (PluginDefinition, PluginContext, PluginConfigManager,
+  namespaced tools), isolated PluginLoader, lifecycle PluginManager with
+  enable/disable persistence, API-version and dependency checks.
+- Plugin management GUI page, bundled example plugin, development template and
+  `scripts/create_plugin.py` scaffolding; `docs/plugin_api.md`.
+
 ## [0.10.0] - 2026-09-21
 
 ### Added

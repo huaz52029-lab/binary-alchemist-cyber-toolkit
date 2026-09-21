@@ -7,7 +7,7 @@ from collections.abc import Mapping
 from enum import StrEnum
 from typing import Any, ClassVar, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field
 
 from core.result import ToolResult
 from core.task import ExecutionContext
@@ -73,7 +73,7 @@ class ToolDefinition(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    id: str = Field(pattern=r"^[a-z0-9_]+(\.[a-z0-9_]+)+$")
+    id: str = Field(pattern=r"^[a-z0-9_]+(\.[a-z0-9_]+)*$")
     name: str = Field(min_length=1, max_length=100)
     category: ToolCategory
     description: str = ""
@@ -85,12 +85,7 @@ class ToolDefinition(BaseModel):
     enabled: bool = True
     parameters: list[ToolParameter] = Field(default_factory=list)
     page: Literal["tool", "encoding"] = "tool"
-
-    @model_validator(mode="after")
-    def _id_matches_category(self) -> ToolDefinition:
-        if not self.id.startswith(f"{self.category.value}."):
-            raise ValueError(f"tool id '{self.id}' must start with '{self.category.value}.'")
-        return self
+    plugin_id: str | None = None
 
 
 ToolParameters = Mapping[str, Any]

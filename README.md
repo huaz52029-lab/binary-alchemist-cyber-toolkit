@@ -95,6 +95,22 @@ CTF module (CTF 工具):
 > offline and local; attachments are never executed; pipelines only run local
 > tools and reject active network tools by default.
 
+Plugin system (插件):
+
+- Automatic discovery of one-level plugin folders under `plugins/`, validated
+  `plugin.json` manifests (id, SemVer, API version, permissions, dependencies).
+- Official Plugin SDK (`core.plugin_sdk`): `PluginContext`, `PluginConfigManager`,
+  namespaced tool registration and lifecycle management (`PluginManager`).
+- Plugin page in the GUI: list/enable/disable/refresh, details, tool opening;
+  enable/disable persists across restarts; broken plugins are isolated.
+- Bundled example plugin and a `templates/plugin_template/` plus
+  `python scripts/create_plugin.py <name>` scaffolding.
+- Full API docs in [docs/plugin_api.md](docs/plugin_api.md).
+
+> Plugin code runs in-process with the same privileges as the application; it is
+> not sandboxed. Only install trusted plugins. No online store, auto-download,
+> dependency auto-install or remote execution is provided.
+
 Web security module (Web安全):
 
 - **URL 解析器** (`web.url_parser`): scheme/host/port/path/query/fragment and

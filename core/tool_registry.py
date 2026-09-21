@@ -38,6 +38,13 @@ class ToolRegistry:
         Raises :class:`ToolRegistryError` on duplicate or invalid ids.
         """
         definition = tool.definition
+        if definition.plugin_id is None and not definition.id.startswith(
+            f"{definition.category.value}."
+        ):
+            raise ToolRegistryError(
+                f"tool id '{definition.id}' must start with '{definition.category.value}.'",
+                user_message=f"工具 {definition.name} 的 ID 必须使用分类命名空间。",
+            )
         with self._lock:
             if definition.id in self._tools:
                 raise ToolRegistryError(
@@ -66,15 +73,30 @@ class ToolRegistry:
         *,
         category: ToolCategory | None = None,
         include_disabled: bool = False,
+        plugin_id: str | None = None,
     ) -> list[ToolDefinition]:
         """Return tool definitions, optionally filtered by category."""
         with self._lock:
             definitions = [tool.definition for tool in self._tools.values()]
+        if plugin_id is not None:
+            definitions = [d for d in definitions if d.plugin_id == plugin_id]
         if category is not None:
             definitions = [d for d in definitions if d.category is category]
         if not include_disabled:
             definitions = [d for d in definitions if d.enabled]
         return sorted(definitions, key=lambda d: d.id)
+
+    def unregister_plugin(self, plugin_id: str) -> list[str]:
+        """Remove every tool registered by one plugin; returns the removed ids."""
+        with self._lock:
+            removed = [
+                tool_id
+                for tool_id, tool in self._tools.items()
+                if tool.definition.plugin_id == plugin_id
+            ]
+            for tool_id in removed:
+                del self._tools[tool_id]
+        return removed
 
     def categories(self) -> dict[ToolCategory, list[ToolDefinition]]:
         """Group enabled tools by category, preserving the enum order."""

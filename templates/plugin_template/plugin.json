@@ -1,0 +1,13 @@
+{
+  "id": "yournamespace.plugin_name",
+  "name": "My Plugin",
+  "version": "0.1.0",
+  "api_version": "1.0",
+  "author": "you",
+  "description": "插件描述",
+  "entry_point": "plugin.py",
+  "enabled": true,
+  "permissions": [],
+  "dependencies": {}
+}
+

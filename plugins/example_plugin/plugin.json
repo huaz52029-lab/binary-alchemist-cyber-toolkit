@@ -1,0 +1,13 @@
+{
+  "id": "binaryalchemist.example",
+  "name": "Example Plugin",
+  "version": "1.0.0",
+  "api_version": "1.0",
+  "author": "Binary Alchemist",
+  "description": "示例插件：验证 Plugin API（文本统计工具）。",
+  "entry_point": "plugin.py",
+  "enabled": true,
+  "permissions": ["filesystem.read"],
+  "dependencies": {}
+}
+

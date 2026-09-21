@@ -16,7 +16,7 @@ from core.config_manager import AppConfig, ConfigManager
 from core.exporters import ExportManager
 from core.logger import LoggerManager
 from core.paths import RuntimePaths
-from core.plugin_loader import PluginLoader
+from core.plugin_manager import PluginManager
 from core.task_manager import TaskManager
 from core.tool_registry import ToolRegistry
 
@@ -32,6 +32,7 @@ class AppContext:
     tool_registry: ToolRegistry
     task_manager: TaskManager
     exporter_manager: ExportManager
+    plugin_manager: PluginManager
 
     @classmethod
     def create(
@@ -62,6 +63,14 @@ class AppContext:
             logger=logger.get_logger("core.tasks"),
         )
         exporter_manager = ExportManager.with_defaults()
+        plugin_manager = PluginManager(
+            tool_registry,
+            paths.plugins,
+            task_manager,
+            state_path=paths.data / "plugin_state.json",
+            logger=logger.get_logger("core.plugins"),
+            app_config=config,
+        )
         context = cls(
             paths=paths,
             config=config,
@@ -70,31 +79,18 @@ class AppContext:
             tool_registry=tool_registry,
             task_manager=task_manager,
             exporter_manager=exporter_manager,
+            plugin_manager=plugin_manager,
         )
         boot_logger = logger.get_logger("app")
         boot_logger.info("%s %s booted", APP_NAME, APP_VERSION)
         if load_plugins:
-            report = PluginLoader(
-                tool_registry,
-                paths.plugins,
-                logger.get_logger("core.plugins"),
-            ).load_all()
-            boot_logger.info(
-                "Plugins scanned: %d loaded, %d failed",
-                report.loaded_count,
-                report.failed_count,
-            )
+            loaded = plugin_manager.load_enabled()
+            boot_logger.info("Plugins enabled: %d loaded", loaded)
         return context
 
     def plugin_count(self) -> int:
         """Count discovered plugin folders without loading them."""
-        return len(
-            PluginLoader(
-                self.tool_registry,
-                self.paths.plugins,
-                self.logger.get_logger("core.plugins"),
-            ).discover()
-        )
+        return len(self.plugin_manager.states)
 
     def shutdown(self) -> None:
         """Release background workers and logging handlers."""
