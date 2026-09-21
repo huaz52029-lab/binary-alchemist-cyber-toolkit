@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from PySide6.QtCore import QAbstractTableModel, QModelIndex, QPersistentModelIndex, Qt
+from PySide6.QtCore import QAbstractTableModel, QModelIndex, QPersistentModelIndex, Qt, Signal
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QApplication,
@@ -98,6 +98,8 @@ class _ResultTableModel(QAbstractTableModel):
 class ResultTable(QWidget):
     """Tabular result view: columns, sorting, selection and clipboard export."""
 
+    row_activated = Signal(object)
+
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._model = _ResultTableModel(self)
@@ -109,6 +111,7 @@ class ResultTable(QWidget):
         self._view.setAlternatingRowColors(True)
         self._view.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self._view.customContextMenuRequested.connect(self._show_context_menu)
+        self._view.doubleClicked.connect(self._on_double_clicked)
         header = self._view.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
         header.setStretchLastSection(True)
@@ -139,6 +142,13 @@ class ResultTable(QWidget):
     def row_count(self) -> int:
         return self._model.rowCount()
 
+    def row_dict(self, row: int) -> dict[str, Any]:
+        """Rebuild the dict view of one row from the current columns."""
+        return {
+            self._model._columns[column]: self._model.index(row, column).data()
+            for column in range(self._model.columnCount())
+        }
+
     def to_text(self) -> str:
         """Render the table as TSV text (header + rows) for clipboard use."""
         columns = self._model._columns
@@ -161,6 +171,9 @@ class ResultTable(QWidget):
                 ]
             )
         return rows
+
+    def _on_double_clicked(self, index: QModelIndex) -> None:
+        self.row_activated.emit(self.row_dict(index.row()))
 
     def _show_context_menu(self, position: Any) -> None:
         menu = QMenu(self)

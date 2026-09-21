@@ -17,7 +17,7 @@ def test_tool_page_run_signal_and_result(
     page = ToolPage(tool.definition, theme_manager)
     assert page.definition.id == "system.dummy"
     spy = QSignalSpy(page.run_requested)
-    page._command_input.set_text("hello")
+    page._fields["input"].set_text("hello")
     page._run_button.click()
     assert spy.count() == 1
     assert spy.at(0)[0] == {"input": "hello"}

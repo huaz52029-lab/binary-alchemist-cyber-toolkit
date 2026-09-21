@@ -8,7 +8,13 @@ from core.exceptions import ToolInputError
 from core.finding import Finding, FindingKind, Severity
 from core.result import ResultStatus, ToolResult
 from core.task import ExecutionContext
-from core.tool_definition import BaseTool, ToolCategory, ToolDefinition, ToolParameters
+from core.tool_definition import (
+    BaseTool,
+    ToolCategory,
+    ToolDefinition,
+    ToolParameter,
+    ToolParameters,
+)
 from modules.network.ip_info.analyzer import EMPTY_MESSAGE, UNRECOGNIZED_MESSAGE, analyze_ip
 from modules.network.ip_info.models import IPInfoResult
 
@@ -24,6 +30,13 @@ class IPInfoTool(BaseTool):
         description="分析 IPv4/IPv6 地址及 CIDR 网络信息。",
         version="1.0.0",
         tags=["ip", "cidr", "ipv4", "ipv6"],
+        parameters=[
+            ToolParameter(
+                name="input",
+                label="目标地址",
+                placeholder="192.168.1.100 或 192.168.1.0/24",
+            )
+        ],
     )
 
     def run(self, params: ToolParameters, context: ExecutionContext) -> ToolResult:

@@ -10,7 +10,13 @@ import pytest
 from core.finding import Finding, FindingKind, Severity
 from core.result import LogEntry, ResultStatus, ToolResult
 from core.task import ExecutionContext
-from core.tool_definition import BaseTool, ToolCategory, ToolDefinition, ToolParameters
+from core.tool_definition import (
+    BaseTool,
+    ToolCategory,
+    ToolDefinition,
+    ToolParameter,
+    ToolParameters,
+)
 
 
 @pytest.fixture
@@ -56,6 +62,7 @@ class DummyTool(BaseTool):
         category=ToolCategory.SYSTEM,
         description="test tool",
         version="1.0.0",
+        parameters=[ToolParameter(name="input", label="输入")],
     )
 
     def run(self, params: ToolParameters, context: ExecutionContext) -> ToolResult:

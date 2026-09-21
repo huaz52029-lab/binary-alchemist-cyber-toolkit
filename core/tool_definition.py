@@ -30,6 +30,29 @@ class ToolCategory(StrEnum):
         return _CATEGORY_LABELS[self]
 
 
+class ToolParameterKind(StrEnum):
+    """Widget-neutral parameter kinds the UI can render generically."""
+
+    TEXT = "text"
+    INTEGER = "integer"
+    CHOICE = "choice"
+
+
+class ToolParameter(BaseModel):
+    """Declarative description of one tool input field."""
+
+    model_config = ConfigDict(frozen=True)
+
+    name: str = Field(pattern=r"^[a-z_][a-z0-9_]*$")
+    label: str = Field(min_length=1, max_length=100)
+    kind: ToolParameterKind = ToolParameterKind.TEXT
+    default: str | int | None = None
+    placeholder: str = ""
+    minimum: int | None = None
+    maximum: int | None = None
+    choices: list[str] = Field(default_factory=list)
+
+
 _CATEGORY_LABELS = {
     ToolCategory.NETWORK: "网络安全",
     ToolCategory.WEB: "Web 安全",
@@ -56,6 +79,7 @@ class ToolDefinition(BaseModel):
     tags: list[str] = Field(default_factory=list)
     advanced: bool = False
     enabled: bool = True
+    parameters: list[ToolParameter] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def _id_matches_category(self) -> ToolDefinition:

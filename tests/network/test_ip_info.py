@@ -175,7 +175,7 @@ def test_registry_discovers_tool() -> None:
     register_builtin_tools(registry)
     assert registry.get("network.ip_info") is not None
     assert registry.definition_of("network.ip_info") is not None
-    assert registry.list_tools()[0].id == "network.ip_info"
+    assert "network.ip_info" in {definition.id for definition in registry.list_tools()}
 
 
 def test_task_manager_executes_tool() -> None:

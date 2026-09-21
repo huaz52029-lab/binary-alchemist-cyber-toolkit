@@ -6,7 +6,7 @@ import json
 from collections.abc import Mapping
 from typing import Any
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QBrush, QColor
 from PySide6.QtWidgets import (
     QApplication,
@@ -30,6 +30,8 @@ from ui.widgets.result_table import ResultTable
 
 class ResultPanel(QWidget):
     """Renders a ToolResult through the most appropriate view."""
+
+    row_activated = Signal(object)
 
     _FINDING_COLUMNS = ("等级", "类型", "标题", "描述", "证据", "建议", "来源")
 
@@ -99,6 +101,7 @@ class ResultPanel(QWidget):
         layout.addWidget(self._stack)
 
         theme_manager.theme_changed.connect(self._on_theme_changed)
+        self._table_view.row_activated.connect(self.row_activated)
 
     def clear(self) -> None:
         self.show_empty()
@@ -135,6 +138,19 @@ class ResultPanel(QWidget):
     def show_table(self, columns: list[str], rows: list[list[Any]]) -> None:
         self._table_view.set_columns(columns)
         self._table_view.set_rows(rows)
+        self._stack.setCurrentWidget(self._table_view)
+
+    def show_labeled_table(
+        self,
+        spec: Mapping[str, Any],
+        rows: list[dict[str, Any]],
+    ) -> None:
+        """Render dict rows using the labeled columns from a display spec."""
+        columns_spec = spec.get("columns") or []
+        labels = [str(item.get("label", item.get("field", ""))) for item in columns_spec]
+        fields = [str(item.get("field", "")) for item in columns_spec]
+        self._table_view.set_columns(labels)
+        self._table_view.set_rows([[row.get(field) for field in fields] for row in rows])
         self._stack.setCurrentWidget(self._table_view)
 
     def show_findings(self, findings: list[Finding]) -> None:
@@ -210,6 +226,9 @@ class ResultPanel(QWidget):
             self.show_error(result.summary or "任务未成功完成。")
         elif result.data:
             display_spec = result.metadata.get("display")
+            if isinstance(display_spec, dict) and display_spec.get("table"):
+                self.show_labeled_table(display_spec["table"], result.data)
+                return
             if (
                 len(result.data) == 1
                 and isinstance(display_spec, dict)

@@ -45,7 +45,7 @@ def test_tool_page_executes_ip_tool(
         exporter_manager=app_context.exporter_manager,
     )
     try:
-        page._command_input.set_text("192.168.1.100/24")
+        page._fields["input"].set_text("192.168.1.100/24")
         page._run_button.click()
         assert _wait_for(lambda: page._last_result is not None, qapp)
         result = page._last_result
@@ -79,7 +79,7 @@ def test_invalid_input_shows_error_without_traceback(
         task_bridge=bridge,
     )
     try:
-        page._command_input.set_text("999.999.999.999")
+        page._fields["input"].set_text("999.999.999.999")
         page._run_button.click()
         assert _wait_for(lambda: page._last_result is not None, qapp)
         result = page._last_result
@@ -104,7 +104,7 @@ def test_main_window_opens_tool_page_and_runs(
         window._open_tool("network.ip_info")
         page = window._stack.currentWidget()
         assert isinstance(page, ToolPage)
-        page._command_input.set_text("127.0.0.1")
+        page._fields["input"].set_text("127.0.0.1")
         page._run_button.click()
         assert _wait_for(lambda: page._last_result is not None, qapp)
         assert page._last_result is not None

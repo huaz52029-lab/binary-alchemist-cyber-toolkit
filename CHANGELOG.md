@@ -9,9 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned
 
-- Additional network, web, encoding, crypto, file analysis, system and CTF tools.
+- Web, encoding, crypto, file analysis, system and CTF tool modules.
 - Plugin management UI and report center.
 - PyInstaller onedir / installer packaging.
+
+## [0.4.0] - 2026-09-21
+
+### Added
+
+- Network tool module: Ping, TCP connect check, TCP port scan, DNS query and
+  network interfaces, all running through the shared TaskManager / ToolResult /
+  exporter pipeline.
+- Infrastructure adapters: `TcpClient` (socket), `WindowsPingProvider`
+  (icmp.dll), `DnsClient` (dnspython) and `NetworkInterfaceProvider` (psutil).
+- Declarative `ToolDefinition.parameters` schema; ToolPage now generates
+  parameter forms, plus cancel / progress / row-detail UI features.
+- Bounded, cancellable TCP scan with progress reporting and a risk finding for
+  large ranges; DNS error translation (NXDOMAIN, timeout, ...); localhost-only
+  and mocked network tests.
+
+### Fixed
+
+- icmp.dll echo buffer sizing and payload passing (heap-safe ICMP echo).
 
 ## [0.3.0] - 2026-09-21
 

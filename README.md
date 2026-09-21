@@ -28,15 +28,32 @@ built around clean architecture, a plugin system and a unified task/result model
 
 ## Project status
 
-Phase 0 (skeleton), Phase 1 (core layer), Phase 2 (GUI framework) and Phase 3
-(first tool) are complete. Packaging arrives in a later phase; see
+Phases 0-4 (skeleton, core, GUI framework, first tool and the network module)
+are complete. Packaging arrives in a later phase; see
 [CHANGELOG.md](CHANGELOG.md) and the phase plan in [AGENTS.md](AGENTS.md).
 
 ## Available tools
 
+Network security module (网络安全):
+
 - **IP 信息分析器** (`network.ip_info`): analyze IPv4/IPv6 addresses and CIDR
   networks - version, network/broadcast addresses, netmask, prefix, address
   counts and scope attributes.
+- **Ping 测试** (`network.ping`): system ICMP reachability and latency
+  statistics (Windows icmp.dll backend).
+- **TCP 连接检测** (`network.tcp_connect`): single TCP connect probe with
+  OPEN/CLOSED/TIMEOUT/ERROR status.
+- **TCP 端口扫描** (`network.tcp_scan`): bounded, cancellable TCP connect scan
+  over a single port or a range, with progress and common-service hints.
+- **DNS 查询** (`network.dns`): A/AAAA/CNAME/MX/NS/TXT/PTR/SOA records with
+  human-readable error translation.
+- **网络接口** (`network.interfaces`): local interface addresses, MAC, status,
+  MTU and traffic counters.
+
+> Network scanning is intended for local machines, lab environments, CTF
+> practice, training ranges and **explicitly authorized** testing only. It
+> performs TCP connect scans and never ships exploitation, fingerprinting or
+> stealth capabilities.
 
 ## Requirements
 

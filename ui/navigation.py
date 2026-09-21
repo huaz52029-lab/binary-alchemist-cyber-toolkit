@@ -66,7 +66,7 @@ class Navigation(QWidget):
         for category in ToolCategory:
             self._add_page(layout, category.value, category.display_name, _CATEGORY_ICONS[category])
             for definition in registry.list_tools(category=category):
-                self._add_tool(layout, definition.id, definition.name)
+                self._add_tool(layout, definition.id, definition.name, definition.icon)
         if not registered_tools:
             empty = QLabel("暂无已注册工具", content)
             empty.setObjectName("navEmpty")
@@ -118,10 +118,18 @@ class Navigation(QWidget):
         self._page_buttons[page_id] = button
         layout.addWidget(button)
 
-    def _add_tool(self, layout: QVBoxLayout, tool_id: str, label: str) -> None:
+    def _add_tool(
+        self,
+        layout: QVBoxLayout,
+        tool_id: str,
+        label: str,
+        icon_name: str,
+    ) -> None:
         button = QPushButton(label, self)
         button.setObjectName("navToolButton")
         button.setCheckable(True)
+        if icon_name:
+            button.setIcon(self._icons.icon(icon_name))
         button.clicked.connect(lambda _checked=False, tid=tool_id: self._on_tool_clicked(tid))
         self._tool_group.addButton(button)
         self._tool_buttons[tool_id] = button
