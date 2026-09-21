@@ -23,6 +23,8 @@ logs/*.log.*
 data/*.db
 data/*.sqlite*
 data/config.json
+data/plugin_state.json
+data/plugins/
 ctf/
 
 # IDE / OS noise
