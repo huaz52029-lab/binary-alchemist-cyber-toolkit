@@ -8,6 +8,7 @@ import threading
 from pathlib import Path
 from typing import Any
 
+from core.persistence import open_database
 from core.reports.report import Report, ReportTaskRef
 
 _REPORT_MIGRATION = """
@@ -43,8 +44,7 @@ class ReportRepository:
     def __init__(self, db_path: Path) -> None:
         self._db_path = Path(db_path)
         self._lock = threading.RLock()
-        self._db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._connection = sqlite3.connect(self._db_path, check_same_thread=False)
+        self._connection = open_database(self._db_path)
         self._connection.row_factory = sqlite3.Row
         with self._lock, self._connection:
             self._connection.executescript(_REPORT_MIGRATION)

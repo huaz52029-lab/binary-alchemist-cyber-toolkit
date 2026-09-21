@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 
 from core.config_manager import AppConfig, ConfigManager
-from core.exceptions import ConfigError
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -65,8 +64,55 @@ def test_save_and_reload_roundtrip(tmp_home: Path) -> None:
     assert ConfigManager(user_path).load() == updated
 
 
-def test_invalid_json_raises_config_error(tmp_home: Path) -> None:
+def test_invalid_json_recovers_to_defaults(tmp_home: Path) -> None:
     user_path = tmp_home / "config.json"
     user_path.write_text("{not json", encoding="utf-8")
-    with pytest.raises(ConfigError):
-        ConfigManager(user_path).load()
+    config = ConfigManager(user_path).load()
+    assert config == AppConfig()
+    assert user_path.exists()
+    backups = list(user_path.parent.glob("config.json.broken-*"))
+    assert len(backups) == 1
+    assert backups[0].read_text(encoding="utf-8") == "{not json"
+
+
+def test_empty_config_recovers_to_defaults(tmp_home: Path) -> None:
+    user_path = tmp_home / "config.json"
+    user_path.write_text("", encoding="utf-8")
+    config = ConfigManager(user_path).load()
+    assert config == AppConfig()
+
+
+def test_non_object_config_recovers_to_defaults(tmp_home: Path) -> None:
+    user_path = tmp_home / "config.json"
+    user_path.write_text("[1, 2, 3]", encoding="utf-8")
+    config = ConfigManager(user_path).load()
+    assert config == AppConfig()
+
+
+def test_invalid_values_recover_to_defaults(tmp_home: Path) -> None:
+    user_path = tmp_home / "config.json"
+    user_path.write_text(
+        json.dumps({"theme": "neon", "tasks": {"max_workers": 0}}),
+        encoding="utf-8",
+    )
+    config = ConfigManager(user_path).load()
+    assert config.theme == "dark"
+    assert config.tasks.max_workers == 8
+
+
+def test_old_version_config_unknown_fields_are_ignored(tmp_home: Path) -> None:
+    user_path = tmp_home / "config.json"
+    user_path.write_text(
+        json.dumps({"legacy_flag": True, "window": {"legacy_size": 999}}),
+        encoding="utf-8",
+    )
+    config = ConfigManager(user_path).load()
+    assert config.window.width == 1280
+
+
+def test_missing_fields_are_filled_from_defaults(tmp_home: Path) -> None:
+    user_path = tmp_home / "config.json"
+    user_path.write_text(json.dumps({"tasks": {}}), encoding="utf-8")
+    config = ConfigManager(user_path).load()
+    assert config.tasks.max_workers == 8
+    assert config.theme == "dark"

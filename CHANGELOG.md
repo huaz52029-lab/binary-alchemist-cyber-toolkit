@@ -9,9 +9,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned
 
-- Web, encoding, crypto, file analysis, system and CTF tool modules.
-- Plugin management UI and report center.
-- PyInstaller onedir / installer packaging.
+- Installer packaging and reports/history UX refinements.
+
+## [0.13.0] - 2026-09-21
+
+### Added
+
+- Full-project quality pass: integration tests (localhost HTTP/TCP fixtures,
+  registry -> TaskManager -> tool -> history -> exporter chains), regression
+  tests (task lifecycle races, CSV injection, path escapes, template paths)
+  and stress tests (1000-task bursts, 500-tool registry, SQLite concurrent
+  writers, 10k history rows, 10-plugin roundtrips, 100 reports, 100MB
+  streaming files).
+- Coverage tooling (`scripts/test.py --cov`, targets: core >= 90%, overall
+  >= 80% business code) and a GitHub Actions CI workflow (Ruff + MyPy +
+  pytest).
+- PyInstaller onedir packaging (`BinaryAlchemist.spec`, `scripts/build.py`):
+  frozen GUI smoke test entry point (`--smoke-test`), clean-room bundle
+  verification and environment-PATH DLL filtering.
+- Quality and known-issue reports in `docs/`.
+
+### Fixed
+
+- CSV export formula-injection guard; JSON/TXT/CSV exporters now redact
+  sensitive values with the unified sanitizer.
+- Corrupt user config no longer blocks startup (quarantine + defaults
+  restore); corrupt SQLite database is quarantined and recreated.
+- Report templates resolve from the runtime root, fixing frozen-bundle
+  template lookup.
+- Regex tool rejects high-complexity patterns on large inputs to avoid
+  catastrophic backtracking.
+- Window geometry restore drops off-screen positions; log bridge detaches on
+  window close (no deleted-signal logging crash); self-test shuts down its
+  context (no leaked SQLite connections).
+- Unified version source: package metadata agrees with `pyproject.toml`
+  (0.13.0).
 
 ## [0.12.0] - 2026-09-21
 

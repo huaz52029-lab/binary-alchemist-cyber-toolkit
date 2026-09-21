@@ -18,6 +18,7 @@ from core.tool_definition import (
 )
 
 MAX_TEXT_LENGTH = 10 * 1024 * 1024
+MAX_COMPLEX_TEXT_LENGTH = 4096
 
 REGEX_TEMPLATES: dict[str, str] = {
     "ipv4": r"\b(?:\d{1,3}\.){3}\d{1,3}\b",
@@ -109,6 +110,12 @@ class RegexTool(BaseTool):
             return context.make_result(ResultStatus.FAILED, f"正则表达式无效：{exc}")
         findings: list[Finding] = []
         if _COMPLEXITY_PATTERN.search(pattern):
+            if len(text) > MAX_COMPLEX_TEXT_LENGTH:
+                return context.make_result(
+                    ResultStatus.FAILED,
+                    "正则表达式复杂度较高且文本过大，为避免长时间阻塞已拒绝执行；"
+                    "请简化表达式或缩短文本。",
+                )
             findings.append(
                 Finding(
                     title="表达式可能存在较高计算复杂度",

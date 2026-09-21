@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import threading
+import time
 
 from core.result import ResultStatus
 from core.task import ExecutionContext
@@ -71,3 +72,15 @@ def test_complexity_hint() -> None:
         _context(),
     )
     assert any(finding.title == "表达式可能存在较高计算复杂度" for finding in result.findings)
+
+
+def test_complex_pattern_on_large_text_is_rejected_fast() -> None:
+    started = time.perf_counter()
+    result = RegexTool().run(
+        {"pattern": r"(a+)+$", "text": "a" * 5000 + "b", "mode": "findall"},
+        _context(),
+    )
+    elapsed = time.perf_counter() - started
+    assert result.status is ResultStatus.FAILED
+    assert "拒绝执行" in result.summary
+    assert elapsed < 1.0

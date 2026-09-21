@@ -54,7 +54,7 @@ def _setup(tmp_path: Path) -> tuple[TaskHistoryManager, ReportManager]:
 
 
 def test_report_lifecycle_and_render(tmp_path: Path) -> None:
-    _history, reports = _setup(tmp_path)
+    history, reports = _setup(tmp_path)
     report = reports.create(
         "Web 安全报告",
         template="web_security",
@@ -72,10 +72,12 @@ def test_report_lifecycle_and_render(tmp_path: Path) -> None:
     assert "HIGH" in markdown
     assert "本报告包含 3 个分析任务" in markdown
     assert "缺少 Content-Security-Policy" in markdown
+    history.close()
+    reports.close()
 
 
 def test_report_export(tmp_path: Path) -> None:
-    _history, reports = _setup(tmp_path)
+    history, reports = _setup(tmp_path)
     report = reports.create("导出测试", template="basic")
     reports.add_task(report.report_id, "t1", "findings")
     markdown_path = reports.export(report.report_id, tmp_path / "report.md")
@@ -83,6 +85,8 @@ def test_report_export(tmp_path: Path) -> None:
     json_path = reports.export(report.report_id, tmp_path / "report.json")
     payload = json.loads(json_path.read_text(encoding="utf-8"))
     assert payload["title"] == "导出测试"
+    history.close()
+    reports.close()
 
 
 def test_referenced_task_cannot_be_deleted(tmp_path: Path) -> None:
@@ -95,6 +99,8 @@ def test_referenced_task_cannot_be_deleted(tmp_path: Path) -> None:
     reports.remove_task(report.report_id, "t1")
     ok, _message = history.delete("t1")
     assert ok
+    history.close()
+    reports.close()
 
 
 def test_delete_report_keeps_tasks(tmp_path: Path) -> None:
@@ -104,3 +110,5 @@ def test_delete_report_keeps_tasks(tmp_path: Path) -> None:
     reports.delete(report.report_id)
     assert reports.get(report.report_id) is None
     assert history.get("t1") is not None
+    history.close()
+    reports.close()

@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
@@ -93,9 +94,22 @@ class ConfigManager:
         return self._user_config
 
     def load(self) -> AppConfig:
-        """Load defaults overlaid with user overrides, creating the user file if absent."""
+        """Load defaults overlaid with user overrides.
+
+        A missing, unreadable or structurally invalid user file never prevents
+        startup: the bad file is quarantined and shipped defaults are restored.
+        """
         defaults = self._load_defaults()
-        raw = self._read_json(self._user_config)
+        try:
+            raw = self._read_json(self._user_config)
+        except ConfigError:
+            self._logger.warning(
+                "User config unreadable, falling back to defaults: %s",
+                self._user_config,
+            )
+            self._quarantine_bad_file()
+            self.save(defaults)
+            return defaults
         if raw is None:
             self.save(defaults)
             return defaults
@@ -103,10 +117,14 @@ class ConfigManager:
         try:
             return defaults.model_validate(self._merge(defaults, raw))
         except ValidationError as exc:
-            raise ConfigError(
-                f"invalid configuration in {self._user_config}: {exc}",
-                user_message="配置文件格式错误，已使用默认设置。",
-            ) from exc
+            self._logger.warning(
+                "User config has invalid values (%s), falling back to defaults: %s",
+                exc,
+                self._user_config,
+            )
+            self._quarantine_bad_file()
+            self.save(defaults)
+            return defaults
 
     def save(self, config: AppConfig) -> Path:
         """Atomically persist the given configuration."""
@@ -187,3 +205,14 @@ class ConfigManager:
                         section,
                         ", ".join(nested_unknown),
                     )
+
+    def _quarantine_bad_file(self) -> None:
+        """Move an unreadable user config aside so a clean one can be written."""
+        if not self._user_config.exists():
+            return
+        timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+        backup = self._user_config.with_name(f"{self._user_config.name}.broken-{timestamp}")
+        try:
+            self._user_config.replace(backup)
+        except OSError:
+            self._logger.warning("Could not quarantine config file: %s", self._user_config)

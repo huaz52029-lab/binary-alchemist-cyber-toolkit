@@ -42,6 +42,7 @@ def test_save_and_query(tmp_path: Path) -> None:
     assert filtered[0]["task_id"] == "t1"
     _searched, total = manager.query(search="ping")
     assert total == 1
+    manager.close()
 
 
 def test_pagination(tmp_path: Path) -> None:
@@ -60,6 +61,7 @@ def test_pagination(tmp_path: Path) -> None:
     assert len(rows) == 50
     rows2, _total = manager.query(limit=50, offset=100)
     assert len(rows2) == 20
+    manager.close()
 
 
 def test_result_artifact_and_cleanup(tmp_path: Path) -> None:
@@ -80,6 +82,7 @@ def test_result_artifact_and_cleanup(tmp_path: Path) -> None:
     ok, _message = manager.delete("t-big")
     assert ok
     assert not Path(record["artifact_path"]).exists()
+    manager.close()
 
 
 def test_safe_params_persisted_only_when_declared(tmp_path: Path) -> None:
@@ -100,6 +103,7 @@ def test_safe_params_persisted_only_when_declared(tmp_path: Path) -> None:
     sensitive = _task("t-secret", "crypto.jwt", TaskStatus.COMPLETED, "ok")
     manager.record_task(sensitive)
     assert manager.get("t-secret")["params_json"] is None
+    manager.close()
 
 
 def test_interrupted_tasks_recovered(tmp_path: Path) -> None:
@@ -110,6 +114,7 @@ def test_interrupted_tasks_recovered(tmp_path: Path) -> None:
     record = reopened.get("t-run")
     assert record["status"] == "FAILED"
     assert "中断" in (record.get("error_message") or "")
+    reopened.close()
 
 
 def test_clear_history(tmp_path: Path) -> None:
@@ -120,3 +125,4 @@ def test_clear_history(tmp_path: Path) -> None:
     assert message == "历史已清空。"
     _rows, total = manager.query()
     assert total == 0
+    manager.close()

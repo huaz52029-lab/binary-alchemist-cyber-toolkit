@@ -50,7 +50,10 @@ class _BridgeHandler(logging.Handler):
             line = self.format(record)
         except Exception:  # pragma: no cover - formatting must never break logging
             return
-        self._bridge._emit_message(record.levelname, line)
+        try:
+            self._bridge._emit_message(record.levelname, line)
+        except RuntimeError:  # bridge widget already destroyed during shutdown
+            return
 
 
 class LogBridge(QObject):

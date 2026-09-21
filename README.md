@@ -28,8 +28,14 @@ built around clean architecture, a plugin system and a unified task/result model
 
 ## Project status
 
-Phases 0-4 (skeleton, core, GUI framework, first tool and the network module)
-are complete. Packaging arrives in a later phase; see
+Phases 0-12 are complete: core, GUI framework, network, encoding, crypto, web,
+file analysis, system security, CTF workbench, plugin system, task history and
+report center, plus a full-project quality pass (unit/integration/regression/
+stress tests, coverage gates, static analysis and PyInstaller onedir
+packaging). The current quality status is summarized in
+[docs/quality_report.md](docs/quality_report.md); known leftovers are tracked
+in [docs/known_issues.md](docs/known_issues.md). The build is in release
+candidate shape (recommended tag `v1.0.0-rc1`, not yet applied); see
 [CHANGELOG.md](CHANGELOG.md) and the phase plan in [AGENTS.md](AGENTS.md).
 
 ## Available tools
@@ -237,10 +243,15 @@ dashboard statistics, live task/log panels and a settings dialog. Use
 Useful commands:
 
 ```powershell
-python scripts\lint.py    # Ruff lint + format check
-python -m mypy core       # static type check
-python scripts\test.py    # pytest suite
+python scripts\lint.py      # Ruff lint + format check
+python -m mypy              # static type check (strict)
+python scripts\test.py      # pytest suite
+python scripts\test.py --cov  # pytest + coverage report
+python scripts\build.py     # PyInstaller onedir build + frozen smoke test
 ```
+
+Run the commands with the project virtual environment interpreter
+(`.venv\Scripts\python.exe`) if the system `python` is not the project's.
 
 ## Layout
 
@@ -276,10 +287,27 @@ when available. `print` is forbidden in business code.
 
 ```powershell
 python scripts\test.py
+python scripts\test.py --cov
 ```
 
 Unit tests only exercise localhost and in-memory/temp fixtures; they never depend on
-external internet access. Every core module ships with tests.
+external internet access. The suite includes integration tests (localhost HTTP/TCP
+servers), regression tests for fixed bugs and stress tests (task bursts, SQLite
+concurrency, large-file streaming). Coverage targets: ≥ 90% for `core`, ≥ 80%
+overall business code.
+
+## Packaging
+
+```powershell
+python scripts/build.py
+```
+
+Produces a self-contained onedir bundle at `dist/BinaryAlchemist/`
+(`BinaryAlchemist.exe` plus shipped configs, themes and icons) and then launches
+the frozen executable with a built-in `--smoke-test` that boots the GUI, the
+tool registry, plugins, history, reports and the task pipeline. The bundle is
+portable: runtime data (`data/`, `logs/`, `plugins/`) is created next to the
+executable, and `CYBERTOOLKIT_HOME` relocates it when needed.
 
 ## License
 

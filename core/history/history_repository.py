@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, cast
 
 from core.history.sanitizer import sanitize_json
+from core.persistence import open_database
 
 SCHEMA_VERSION = 1
 
@@ -53,13 +54,8 @@ class HistoryRepository:
         self._migrate()
 
     def _connect(self) -> None:
-        self._db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._connection = sqlite3.connect(
-            self._db_path,
-            check_same_thread=False,
-        )
+        self._connection = open_database(self._db_path)
         self._connection.row_factory = sqlite3.Row
-        self._connection.execute("PRAGMA journal_mode=WAL")
 
     def _migrate(self) -> None:
         assert self._connection is not None

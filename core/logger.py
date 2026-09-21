@@ -112,6 +112,13 @@ class LoggerManager:
         logging.getLogger().addHandler(handler)
         self._handlers.append(handler)
 
+    def detach_sink(self, handler: logging.Handler) -> None:
+        """Detach and close a sink previously added with :meth:`attach_sink`."""
+        logging.getLogger().removeHandler(handler)
+        if handler in self._handlers:
+            self._handlers.remove(handler)
+        handler.close()
+
     def set_level(self, level: str) -> None:
         """Change the effective log level at runtime."""
         self._level = _coerce_level(level)

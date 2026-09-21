@@ -5,10 +5,11 @@ from __future__ import annotations
 import json
 import uuid
 from datetime import UTC, datetime
-from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
+
+from core.paths import app_root
 
 
 def _utcnow() -> str:
@@ -49,7 +50,9 @@ class Report(BaseModel):
         self.revision += 1
 
 
-TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "configs" / "report_templates"
+# Runtime-rooted so the bundled templates resolve both from a source checkout
+# and from a PyInstaller onedir layout (resources live next to the executable).
+TEMPLATE_DIR = app_root() / "configs" / "report_templates"
 
 
 def load_template(name: str) -> dict[str, Any]:

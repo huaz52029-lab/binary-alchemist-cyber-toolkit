@@ -175,7 +175,20 @@ class MainWindow(QMainWindow):
         window = self._context.config.window
         self.resize(window.width, window.height)
         if window.x is not None and window.y is not None:
-            self.move(window.x, window.y)
+            requested = self.frameGeometry()
+            requested.moveTo(window.x, window.y)
+            visible = any(
+                screen.availableGeometry().intersects(requested)
+                for screen in QApplication.screens()
+            )
+            if visible:
+                self.move(window.x, window.y)
+            else:
+                self._logger.warning(
+                    "Saved window position (%d, %d) is off-screen; using default position",
+                    window.x,
+                    window.y,
+                )
         if window.maximized:
             self.showMaximized()
 
@@ -303,4 +316,5 @@ class MainWindow(QMainWindow):
         except Exception:  # pragma: no cover - config save must not block closing
             self._logger.exception("Failed to persist window geometry")
         self._task_bridge.detach()
+        self._context.logger.detach_sink(self._log_bridge.handler)
         event.accept()

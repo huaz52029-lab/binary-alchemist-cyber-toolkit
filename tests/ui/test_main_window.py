@@ -56,3 +56,24 @@ def test_theme_switch_updates_application_stylesheet(
     finally:
         window.close()
         qapp.processEvents()
+
+
+def test_offscreen_saved_position_is_corrected(
+    app_context: AppContext,
+    theme_manager: ThemeManager,
+    qapp: QApplication,
+) -> None:
+    app_context.config.window.x = 99999
+    app_context.config.window.y = 99999
+    window = MainWindow(app_context, theme_manager)
+    try:
+        window.show()
+        qapp.processEvents()
+        assert window.x() != 99999
+        assert any(
+            screen.availableGeometry().intersects(window.frameGeometry())
+            for screen in QApplication.screens()
+        )
+    finally:
+        window.close()
+        qapp.processEvents()
