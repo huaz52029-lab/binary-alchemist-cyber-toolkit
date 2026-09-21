@@ -17,6 +17,7 @@ class Base32Tool(EncodingTool):
         category=ToolCategory.ENCODING,
         icon="encoding",
         description="Base32 编码/解码（大小写不敏感）。编码而非加密。",
+        input_policy="safe-to-persist",
         page="encoding",
         parameters=[
             ToolParameter(

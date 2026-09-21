@@ -1,0 +1,12 @@
+{
+  "name": "Web Security Report",
+  "sections": [
+    {"key": "target_information", "title": "Target Information"},
+    {"key": "web_analysis", "title": "Web Analysis"},
+    {"key": "security_headers", "title": "Security Headers"},
+    {"key": "tls", "title": "TLS"},
+    {"key": "cookies", "title": "Cookies"},
+    {"key": "findings", "title": "Findings"}
+  ]
+}
+

@@ -1,0 +1,11 @@
+{
+  "name": "CTF Analysis Report",
+  "sections": [
+    {"key": "challenge", "title": "Challenge"},
+    {"key": "tools", "title": "Tools"},
+    {"key": "notes", "title": "Notes"},
+    {"key": "results", "title": "Results"},
+    {"key": "findings", "title": "Findings"}
+  ]
+}
+

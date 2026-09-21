@@ -111,6 +111,23 @@ Plugin system (插件):
 > not sandboxed. Only install trusted plugins. No online store, auto-download,
 > dependency auto-install or remote execution is provided.
 
+Task history & report center (任务历史 / 报告中心):
+
+- Every tool task is persisted into SQLite (`data/toolkit.db`) automatically
+  with search, filters (tool/category/status/time), sorting and pagination.
+- Large results spill to `data/results/<task_id>.json` artifacts instead of
+  bloating SQLite; artifacts are cleaned up with their tasks.
+- Unified sensitive-data sanitizer (Authorization/Cookie/password/token/... ->
+  `[REDACTED]`); only tools declaring `safe-to-persist` keep re-runnable params.
+- Report center: templates (basic/web/file/system/CTF), task references with
+  sections, notes and conclusion, Markdown/JSON/TXT export, severity-ordered
+  findings and automatic summaries.
+- Interrupted RUNNING/PENDING tasks are marked FAILED on startup.
+
+> No cloud sync, online report services or third-party submission is involved;
+> everything stays local. Findings in reports are tool analysis results, not
+> automatic vulnerability verdicts.
+
 Web security module (Web安全):
 
 - **URL 解析器** (`web.url_parser`): scheme/host/port/path/query/fragment and

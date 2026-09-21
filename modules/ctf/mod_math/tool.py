@@ -51,6 +51,7 @@ class ModMathTool(BaseTool):
         category=ToolCategory.CTF,
         icon="ctf",
         description="计算 a mod n、a^b mod n、gcd、lcm 与模逆元（支持大整数）。",
+        input_policy="safe-to-persist",
         parameters=[
             ToolParameter(name="a", label="a", placeholder="如 48"),
             ToolParameter(name="b", label="b", placeholder="如 18"),

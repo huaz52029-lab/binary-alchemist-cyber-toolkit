@@ -17,6 +17,7 @@ class UnicodeTool(EncodingTool):
         category=ToolCategory.ENCODING,
         icon="encoding",
         description="文本与 Unicode 转义（\\uXXXX / \\UXXXXXXXX）互转，支持中文与 Emoji。",
+        input_policy="safe-to-persist",
         page="encoding",
         parameters=[
             ToolParameter(

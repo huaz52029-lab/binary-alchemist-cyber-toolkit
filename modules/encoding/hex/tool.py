@@ -17,6 +17,7 @@ class HexTool(EncodingTool):
         category=ToolCategory.ENCODING,
         icon="encoding",
         description="文本与十六进制互转（支持空格分隔、大小写不敏感）。",
+        input_policy="safe-to-persist",
         page="encoding",
         parameters=[
             ToolParameter(

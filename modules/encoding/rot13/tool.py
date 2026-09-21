@@ -17,6 +17,7 @@ class Rot13Tool(EncodingTool):
         category=ToolCategory.ENCODING,
         icon="encoding",
         description="ROT13 字母旋转（自身可逆）。这是编码而非加密。",
+        input_policy="safe-to-persist",
         page="encoding",
         parameters=[
             ToolParameter(

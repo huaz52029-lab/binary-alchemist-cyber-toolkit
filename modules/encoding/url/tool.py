@@ -17,6 +17,7 @@ class UrlTool(EncodingTool):
         category=ToolCategory.ENCODING,
         icon="encoding",
         description="URL 百分号编码/解码（urllib.parse）。URL 编码不是加密。",
+        input_policy="safe-to-persist",
         page="encoding",
         parameters=[
             ToolParameter(

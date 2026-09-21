@@ -30,6 +30,7 @@ class IPInfoTool(BaseTool):
         description="分析 IPv4/IPv6 地址及 CIDR 网络信息。",
         version="1.0.0",
         tags=["ip", "cidr", "ipv4", "ipv6"],
+        input_policy="safe-to-persist",
         parameters=[
             ToolParameter(
                 name="input",

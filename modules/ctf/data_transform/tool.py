@@ -57,6 +57,7 @@ class DataTransformTool(BaseTool):
         category=ToolCategory.CTF,
         icon="ctf",
         description="文本、字节、Hex、整数、二进制与 Base64 之间的双向转换。",
+        input_policy="safe-to-persist",
         parameters=[
             ToolParameter(
                 name="input",

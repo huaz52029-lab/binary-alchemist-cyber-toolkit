@@ -1,0 +1,12 @@
+{
+  "name": "System Security Report",
+  "sections": [
+    {"key": "system_information", "title": "System Information"},
+    {"key": "processes", "title": "Processes"},
+    {"key": "connections", "title": "Connections"},
+    {"key": "services", "title": "Services"},
+    {"key": "startup", "title": "Startup"},
+    {"key": "findings", "title": "Findings"}
+  ]
+}
+

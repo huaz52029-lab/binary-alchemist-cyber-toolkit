@@ -83,7 +83,7 @@ python scripts\test.py        # pytest
 0. Skeleton (done) - 1. Core (done) - 2. GUI frame (done) - 3. First tool: IP info (done) -
 4. Network tools (done) - 5. Encoding & crypto (done) - 6. Web security (done) -
 7. File analysis (done) - 8. System security (done) - 9. CTF (done) -
-10. Plugins (done) - 11. Reports & history -
+10. Plugins (done) - 11. Reports & history (done) -
 12. Full test coverage - 13. Performance - 14. PyInstaller onedir, then installer.
 
 Do not jump ahead. A stable core beats early breadth.

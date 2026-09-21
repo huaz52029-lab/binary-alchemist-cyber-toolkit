@@ -68,6 +68,7 @@ class HashTool(BaseTool):
         category=ToolCategory.CRYPTO,
         icon="crypto",
         description="计算文本或文件的 MD5/SHA1/SHA2 哈希并支持大小写不敏感对比。哈希不是加密。",
+        input_policy="safe-to-persist",
         parameters=[
             ToolParameter(
                 name="mode",

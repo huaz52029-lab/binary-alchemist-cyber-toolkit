@@ -8,10 +8,12 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import (
     QApplication,
+    QComboBox,
     QHBoxLayout,
     QLabel,
     QMainWindow,
     QPushButton,
+    QSpinBox,
     QSplitter,
     QStackedWidget,
     QStatusBar,
@@ -28,6 +30,7 @@ from ui.bridge import LogBridge, TaskBridge
 from ui.category_page import CategoryPage
 from ui.dashboard import Dashboard
 from ui.encoding_page import EncodingToolPage
+from ui.history_page import TaskHistoryPage
 from ui.icons import IconProvider
 from ui.log_panel import LogPanel
 from ui.navigation import (
@@ -38,10 +41,9 @@ from ui.navigation import (
     PAGE_SETTINGS,
     Navigation,
 )
-from ui.placeholder_page import PlaceholderPage
 from ui.plugin_page import PluginPage
+from ui.report_page import ReportPage
 from ui.settings_dialog import SettingsDialog
-from ui.task_panel import TaskPanel
 from ui.theme import ThemeManager
 from ui.tool_page import ToolPage
 from ui.widgets.command_input import CommandInput
@@ -79,13 +81,19 @@ class MainWindow(QMainWindow):
         self._navigation = Navigation(context.tool_registry, icons=self._icons)
         self._stack = QStackedWidget(self)
         self._dashboard = Dashboard(context, self._theme)
-        self._task_panel = TaskPanel(self)
+        self._history_page = TaskHistoryPage(
+            context.history_manager,
+            self._theme,
+            exporter_manager=context.exporter_manager,
+        )
+        self._history_page.re_run_requested.connect(self._re_run)
+        self._report_page = ReportPage(context.report_manager)
         self._plugin_page = PluginPage(context.plugin_manager)
         self._plugin_page.open_tool_requested.connect(self._open_tool)
         pages: dict[str, QWidget] = {
             PAGE_DASHBOARD: self._dashboard,
-            PAGE_HISTORY: self._task_panel,
-            PAGE_REPORTS: PlaceholderPage("报告中心", "统一报告导出将在后续阶段提供。"),
+            PAGE_HISTORY: self._history_page,
+            PAGE_REPORTS: self._report_page,
             PAGE_PLUGINS: self._plugin_page,
         }
         for category in ToolCategory:
@@ -185,6 +193,10 @@ class MainWindow(QMainWindow):
             self._dashboard.refresh()
         if page_id == PAGE_PLUGINS:
             self._plugin_page.refresh()
+        if page_id == PAGE_HISTORY:
+            self._history_page.refresh()
+        if page_id == PAGE_REPORTS:
+            self._report_page.refresh()
 
     def _open_tool(self, tool_id: str) -> None:
         definition = self._context.tool_registry.definition_of(tool_id)
@@ -234,20 +246,34 @@ class MainWindow(QMainWindow):
         if isinstance(page, EncodingToolPage):
             page._input.set_text(payload)
 
+    def _re_run(self, tool_id: str, params: object) -> None:
+        """Open a tool page and prefill persisted params for manual re-run."""
+        self._open_tool(tool_id)
+        page = self._tool_pages.get(tool_id)
+        if not isinstance(page, ToolPage) or not isinstance(params, dict):
+            return
+        for name, value in params.items():
+            widget = page._fields.get(name)
+            if isinstance(widget, CommandInput) and isinstance(value, str):
+                widget.set_text(value)
+            elif isinstance(widget, QSpinBox) and isinstance(value, int):
+                widget.setValue(value)
+            elif isinstance(widget, QComboBox) and value is not None:
+                index = widget.findData(value)
+                if index >= 0:
+                    widget.setCurrentIndex(index)
+
     def _on_run_requested(self, params: object) -> None:
         self._logger.warning("Tool without an execution backend requested a run: %s", params)
 
     def _on_task_created(self, task: Task) -> None:
-        self._task_panel.set_task(task)
         self._update_task_count()
         self.statusBar().showMessage(f"任务 {task.tool_id} 已创建", 3000)
 
     def _on_task_updated(self, task: Task) -> None:
-        self._task_panel.set_task(task)
         self._update_task_count()
 
     def _on_task_finished(self, task: Task) -> None:
-        self._task_panel.set_task(task)
         self._update_task_count()
         self.statusBar().showMessage(f"任务 {task.tool_id} {task.status.value}", 5000)
 

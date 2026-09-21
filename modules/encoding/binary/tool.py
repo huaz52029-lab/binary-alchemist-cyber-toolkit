@@ -17,6 +17,7 @@ class BinaryTool(EncodingTool):
         category=ToolCategory.ENCODING,
         icon="encoding",
         description="文本与 8 位二进制（0/1）互转，解码支持空格分隔。",
+        input_policy="safe-to-persist",
         page="encoding",
         parameters=[
             ToolParameter(

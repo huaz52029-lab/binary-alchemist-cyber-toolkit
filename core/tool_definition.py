@@ -86,6 +86,7 @@ class ToolDefinition(BaseModel):
     parameters: list[ToolParameter] = Field(default_factory=list)
     page: Literal["tool", "encoding"] = "tool"
     plugin_id: str | None = None
+    input_policy: Literal["summary-only", "safe-to-persist"] = "summary-only"
 
 
 ToolParameters = Mapping[str, Any]

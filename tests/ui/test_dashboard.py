@@ -27,3 +27,4 @@ def test_dashboard_reads_live_counts(
     assert dashboard._tasks_card.value() == "1"
     assert dashboard._recent_list.count() == 1
     assert "test.tool" in dashboard._recent_list.item(0).text()
+    assert dashboard._reports_list.count() == 1

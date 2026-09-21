@@ -14,9 +14,12 @@ from pathlib import Path
 from core import APP_NAME, APP_VERSION
 from core.config_manager import AppConfig, ConfigManager
 from core.exporters import ExportManager
+from core.history.task_history import TaskHistoryManager
 from core.logger import LoggerManager
 from core.paths import RuntimePaths
 from core.plugin_manager import PluginManager
+from core.reports.report_manager import ReportManager
+from core.reports.report_repository import ReportRepository
 from core.task_manager import TaskManager
 from core.tool_registry import ToolRegistry
 
@@ -33,6 +36,8 @@ class AppContext:
     task_manager: TaskManager
     exporter_manager: ExportManager
     plugin_manager: PluginManager
+    history_manager: TaskHistoryManager
+    report_manager: ReportManager
 
     @classmethod
     def create(
@@ -71,6 +76,17 @@ class AppContext:
             logger=logger.get_logger("core.plugins"),
             app_config=config,
         )
+        history_manager = TaskHistoryManager(
+            paths.data / "toolkit.db",
+            paths.data / "results",
+            tool_registry,
+            logger.get_logger("core.history"),
+        )
+        report_manager = ReportManager(
+            ReportRepository(paths.data / "toolkit.db"),
+            history_manager,
+        )
+        task_manager.subscribe(history_manager.record_task)
         context = cls(
             paths=paths,
             config=config,
@@ -80,6 +96,8 @@ class AppContext:
             task_manager=task_manager,
             exporter_manager=exporter_manager,
             plugin_manager=plugin_manager,
+            history_manager=history_manager,
+            report_manager=report_manager,
         )
         boot_logger = logger.get_logger("app")
         boot_logger.info("%s %s booted", APP_NAME, APP_VERSION)
@@ -95,4 +113,6 @@ class AppContext:
     def shutdown(self) -> None:
         """Release background workers and logging handlers."""
         self.task_manager.shutdown(wait=False)
+        self.history_manager.close()
+        self.report_manager.close()
         self.logger.shutdown()

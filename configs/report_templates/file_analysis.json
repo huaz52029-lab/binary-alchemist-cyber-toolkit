@@ -1,0 +1,12 @@
+{
+  "name": "File Analysis Report",
+  "sections": [
+    {"key": "file_information", "title": "File Information"},
+    {"key": "hashes", "title": "Hashes"},
+    {"key": "strings_entropy", "title": "Strings & Entropy"},
+    {"key": "pe_analysis", "title": "PE Analysis"},
+    {"key": "ioc", "title": "Candidate IOC"},
+    {"key": "findings", "title": "Findings"}
+  ]
+}
+

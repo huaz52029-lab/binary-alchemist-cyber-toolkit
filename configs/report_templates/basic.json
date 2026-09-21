@@ -1,0 +1,8 @@
+{
+  "name": "Basic Security Report",
+  "sections": [
+    {"key": "target_information", "title": "Target Information"},
+    {"key": "findings", "title": "Findings"}
+  ]
+}
+

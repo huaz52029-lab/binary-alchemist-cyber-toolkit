@@ -17,6 +17,7 @@ class Base58Tool(EncodingTool):
         category=ToolCategory.ENCODING,
         icon="encoding",
         description="Base58 编码/解码（Bitcoin 字母表，纯 Python 实现）。编码而非加密。",
+        input_policy="safe-to-persist",
         page="encoding",
         parameters=[
             ToolParameter(

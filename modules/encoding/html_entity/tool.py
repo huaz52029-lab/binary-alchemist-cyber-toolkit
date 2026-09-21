@@ -17,6 +17,7 @@ class HtmlEntityTool(EncodingTool):
         category=ToolCategory.ENCODING,
         icon="encoding",
         description="文本与 HTML 实体（&lt; 等）互转。",
+        input_policy="safe-to-persist",
         page="encoding",
         parameters=[
             ToolParameter(

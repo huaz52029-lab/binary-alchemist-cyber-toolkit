@@ -74,8 +74,14 @@ class Dashboard(QWidget):
         recent_title.setObjectName("sectionTitle")
         self._recent_list = QListWidget(recent_frame)
         self._recent_list.setObjectName("recentTaskList")
+        reports_title = QLabel("最近报告", recent_frame)
+        reports_title.setObjectName("sectionTitle")
+        self._reports_list = QListWidget(recent_frame)
+        self._reports_list.setObjectName("recentTaskList")
         recent_layout.addWidget(recent_title)
         recent_layout.addWidget(self._recent_list)
+        recent_layout.addWidget(reports_title)
+        recent_layout.addWidget(self._reports_list)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 24, 24, 24)
@@ -93,11 +99,18 @@ class Dashboard(QWidget):
         self._tasks_card.set_value(self._context.task_manager.total_count())
         self._plugins_card.set_value(self._context.plugin_count())
         self._recent_list.clear()
-        recent = self._context.task_manager.recent_snapshots(5)
+        recent = self._context.history_manager.recent(5)
         if recent:
-            for snapshot in recent:
+            for record in recent:
                 self._recent_list.addItem(
-                    f"[{snapshot.status.value}] {snapshot.tool_id} · {snapshot.task_id[:8]}"
+                    f"[{record['status']}] {record['tool_name']} · {record['task_id'][:8]}"
                 )
         else:
             self._recent_list.addItem("暂无任务记录")
+        self._reports_list.clear()
+        reports, _task_counts = self._context.report_manager.list()
+        if reports:
+            for report in reports[:5]:
+                self._reports_list.addItem(f"{report.title} · {report.updated_at[:16]}")
+        else:
+            self._reports_list.addItem("暂无报告")

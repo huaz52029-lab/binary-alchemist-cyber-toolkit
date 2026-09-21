@@ -17,6 +17,7 @@ class Rot47Tool(EncodingTool):
         category=ToolCategory.ENCODING,
         icon="encoding",
         description="ROT47 旋转（ASCII 33-126，范围外字符保持不变，自身可逆）。",
+        input_policy="safe-to-persist",
         page="encoding",
         parameters=[
             ToolParameter(

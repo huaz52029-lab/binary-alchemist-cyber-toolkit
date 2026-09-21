@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Plugin management UI and report center.
 - PyInstaller onedir / installer packaging.
 
+## [0.12.0] - 2026-09-21
+
+### Added
+
+- Task history: SQLite persistence with migrations, pagination, filters,
+  search, sorting, deletion (report-reference guarded), artifact spillover for
+  large results and startup recovery of interrupted tasks.
+- Report center: templates, task references with sections, Markdown renderer,
+  JSON/Markdown/TXT export, finding ordering and automatic summaries.
+- Unified SensitiveDataSanitizer and per-tool input persistence policy.
+- Task history and report center GUI pages plus dashboard recent tasks/reports.
+
 ## [0.11.0] - 2026-09-21
 
 ### Added

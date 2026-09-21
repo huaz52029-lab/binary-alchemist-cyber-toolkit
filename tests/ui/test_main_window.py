@@ -19,7 +19,7 @@ def test_main_window_builds_and_switches_pages(
         qapp.processEvents()
         assert window._stack.currentWidget() is window._dashboard
         window._navigation._page_buttons[PAGE_HISTORY].click()
-        assert window._stack.currentWidget() is window._task_panel
+        assert window._stack.currentWidget() is window._history_page
         window._navigation._page_buttons[PAGE_DASHBOARD].click()
         assert window._stack.currentWidget() is window._dashboard
     finally:
