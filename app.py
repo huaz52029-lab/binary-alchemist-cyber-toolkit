@@ -17,6 +17,7 @@ from core.app_context import AppContext
 from core.exceptions import TaskError
 from core.result import ResultStatus, ToolResult
 from core.task import ExecutionContext, TaskStatus
+from modules import register_builtin_tools
 
 
 class Application:
@@ -71,6 +72,7 @@ class Application:
             log_level=args.log_level,
             load_plugins=args.plugins,
         )
+        register_builtin_tools(context.tool_registry)
         return cls(context, args=args)
 
     def run(self) -> int:

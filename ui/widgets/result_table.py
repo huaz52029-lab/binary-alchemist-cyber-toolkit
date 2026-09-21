@@ -139,6 +139,17 @@ class ResultTable(QWidget):
     def row_count(self) -> int:
         return self._model.rowCount()
 
+    def to_text(self) -> str:
+        """Render the table as TSV text (header + rows) for clipboard use."""
+        columns = self._model._columns
+        rows = [
+            [self._model.index(row, column).data() for column in range(self._model.columnCount())]
+            for row in range(self._model.rowCount())
+        ]
+        lines = ["\t".join(columns)]
+        lines.extend("\t".join("" if cell is None else str(cell) for cell in row) for row in rows)
+        return "\n".join(lines)
+
     def selected_rows(self) -> list[list[Any]]:
         rows: list[list[Any]] = []
         for index in self._view.selectionModel().selectedRows():

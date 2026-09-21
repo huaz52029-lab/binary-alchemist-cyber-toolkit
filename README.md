@@ -28,9 +28,15 @@ built around clean architecture, a plugin system and a unified task/result model
 
 ## Project status
 
-Phase 0 (skeleton), Phase 1 (core layer) and Phase 2 (GUI framework) are complete.
-Security tools and packaging arrive in later phases; see [CHANGELOG.md](CHANGELOG.md)
-and the phase plan in [AGENTS.md](AGENTS.md).
+Phase 0 (skeleton), Phase 1 (core layer), Phase 2 (GUI framework) and Phase 3
+(first tool) are complete. Packaging arrives in a later phase; see
+[CHANGELOG.md](CHANGELOG.md) and the phase plan in [AGENTS.md](AGENTS.md).
+
+## Available tools
+
+- **IP 信息分析器** (`network.ip_info`): analyze IPv4/IPv6 addresses and CIDR
+  networks - version, network/broadcast addresses, netmask, prefix, address
+  counts and scope attributes.
 
 ## Requirements
 

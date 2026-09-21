@@ -9,9 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned
 
-- Network, web, encoding, crypto, file analysis, system and CTF tool modules.
+- Additional network, web, encoding, crypto, file analysis, system and CTF tools.
 - Plugin management UI and report center.
 - PyInstaller onedir / installer packaging.
+
+## [0.3.0] - 2026-09-21
+
+### Added
+
+- First end-to-end security tool: IP 信息分析器 (`network.ip_info`) covering
+  IPv4/IPv6 addresses and CIDR blocks with scope attributes and calibrated
+  INFO/FACT findings.
+- Tool execution pipeline wiring: ToolPage -> TaskManager -> tool -> ToolResult
+  -> ResultPanel, plus copy-to-clipboard and JSON/TXT/CSV export actions.
+- Generic grouped key-value view in ResultPanel driven by a tool-provided
+  display spec in `ToolResult.metadata`.
+- Built-in tool registration through `modules.register_builtin_tools`.
+- Unit tests for the analyzer/tool/registry/task manager and offscreen UI
+  integration tests for the full chain.
 
 ## [0.2.0] - 2026-09-21
 

@@ -186,17 +186,22 @@ class MainWindow(QMainWindow):
             return
         page = self._tool_pages.get(tool_id)
         if page is None:
-            page = ToolPage(definition, self._theme, self._log_bridge)
+            page = ToolPage(
+                definition,
+                self._theme,
+                self._log_bridge,
+                tool=self._context.tool_registry.get(tool_id),
+                task_manager=self._context.task_manager,
+                task_bridge=self._task_bridge,
+                exporter_manager=self._context.exporter_manager,
+            )
             page.run_requested.connect(self._on_run_requested)
             self._stack.addWidget(page)
             self._tool_pages[tool_id] = page
         self._stack.setCurrentWidget(page)
 
     def _on_run_requested(self, params: object) -> None:
-        self._logger.warning(
-            "Tool execution will be wired to TaskManager in phase 3 (params=%s)",
-            params,
-        )
+        self._logger.warning("Tool without an execution backend requested a run: %s", params)
 
     def _on_task_created(self, task: Task) -> None:
         self._task_panel.set_task(task)

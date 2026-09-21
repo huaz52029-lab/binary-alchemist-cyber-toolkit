@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from typing import Any
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QColor
 from PySide6.QtWidgets import (
+    QApplication,
     QHeaderView,
     QLabel,
     QPlainTextEdit,
@@ -63,6 +65,19 @@ class ResultPanel(QWidget):
         self._findings_view.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.ResizeToContents
         )
+        self._keyvalue_view = QTableWidget(0, 3, self)
+        self._keyvalue_view.setObjectName("resultKeyValues")
+        self._keyvalue_view.setHorizontalHeaderLabels(("分组", "字段", "值"))
+        self._keyvalue_view.setAlternatingRowColors(True)
+        self._keyvalue_view.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self._keyvalue_view.verticalHeader().setVisible(False)
+        self._keyvalue_view.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.ResizeToContents
+        )
+        self._keyvalue_view.horizontalHeader().setStretchLastSection(True)
+        self._keyvalue_rows: list[tuple[str, str, str]] = []
+        self._keyvalue_title = ""
+        self._last_json_payload: Any = None
         self._error_view = QLabel("", self)
         self._error_view.setObjectName("resultError")
         self._error_view.setWordWrap(True)
@@ -72,6 +87,7 @@ class ResultPanel(QWidget):
             self._json_view,
             self._table_view,
             self._findings_view,
+            self._keyvalue_view,
             self._error_view,
         ):
             self._stack.addWidget(view)
@@ -103,6 +119,7 @@ class ResultPanel(QWidget):
             except json.JSONDecodeError:
                 self.show_text(raw)
                 return
+        self._last_json_payload = payload
         self._json_view.clear()
         if isinstance(payload, dict):
             for key, value in payload.items():
@@ -142,6 +159,42 @@ class ResultPanel(QWidget):
                 self._findings_view.setItem(row, column, item)
         self._stack.setCurrentWidget(self._findings_view)
 
+    def show_key_values(self, spec: Mapping[str, Any], data: Mapping[str, Any]) -> None:
+        """Render a single structured record as grouped 字段/值 rows.
+
+        ``spec`` comes from ``ToolResult.metadata["display"]``; items with a
+        missing or ``None`` field value are skipped (e.g. IPv6 broadcast).
+        """
+        rows: list[tuple[str, str, str]] = []
+        title = str(spec.get("title", "结果"))
+        for section in spec.get("sections") or []:
+            section_title = str(section.get("title", ""))
+            for item in section.get("items") or []:
+                field = item.get("field")
+                if not field or field not in data:
+                    continue
+                value = data.get(field)
+                if value is None:
+                    continue
+                label = str(item.get("label", field))
+                value_map = item.get("map")
+                if isinstance(value, bool):
+                    display = "是" if value else "否"
+                elif isinstance(value_map, dict):
+                    display = value_map.get(str(value), str(value))
+                else:
+                    display = str(value)
+                rows.append((section_title, label, display))
+        self._keyvalue_rows = rows
+        self._keyvalue_title = title
+        table = self._keyvalue_view
+        table.setRowCount(len(rows))
+        for row, (section, label, value) in enumerate(rows):
+            table.setItem(row, 0, QTableWidgetItem(section))
+            table.setItem(row, 1, QTableWidgetItem(label))
+            table.setItem(row, 2, QTableWidgetItem(value))
+        self._stack.setCurrentWidget(self._keyvalue_view)
+
     def show_error(self, message: str) -> None:
         self._error_view.setText(message)
         self._stack.setCurrentWidget(self._error_view)
@@ -156,6 +209,14 @@ class ResultPanel(QWidget):
         ):
             self.show_error(result.summary or "任务未成功完成。")
         elif result.data:
+            display_spec = result.metadata.get("display")
+            if (
+                len(result.data) == 1
+                and isinstance(display_spec, dict)
+                and display_spec.get("sections")
+            ):
+                self.show_key_values(display_spec, result.data[0])
+                return
             columns: list[str] = []
             for row in result.data:
                 for key in row:
@@ -167,6 +228,40 @@ class ResultPanel(QWidget):
             self.show_findings(result.findings)
         else:
             self.show_json(result.model_dump(mode="json"))
+
+    def current_text(self) -> str:
+        """Plain-text rendering of the active view, used by the copy action."""
+        current = self._stack.currentWidget()
+        if current is self._keyvalue_view:
+            lines = [f"# {self._keyvalue_title}"]
+            last_section: str | None = None
+            for section, label, value in self._keyvalue_rows:
+                if section != last_section:
+                    lines.append(f"## {section}")
+                    last_section = section
+                lines.append(f"{label}：{value}")
+            return "\n".join(lines)
+        if current is self._text_view:
+            return self._text_view.toPlainText()
+        if current is self._table_view:
+            return self._table_view.to_text()
+        if current is self._findings_view:
+            return "\n".join(
+                f"[{finding.severity.value}|{finding.kind.value}] {finding.title}: "
+                f"{finding.description}"
+                for finding in self._last_findings
+            )
+        if current is self._json_view:
+            return json.dumps(self._last_json_payload, ensure_ascii=False, indent=2)
+        if current is self._error_view:
+            return self._error_view.text()
+        return ""
+
+    def copy_to_clipboard(self) -> None:
+        """Copy the current view as plain text."""
+        text = self.current_text()
+        if text:
+            QApplication.clipboard().setText(text)
 
     def _populate_json_item(self, parent: QTreeWidgetItem, value: Any) -> None:
         if isinstance(value, dict):
