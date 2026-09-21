@@ -76,6 +76,26 @@ CTF module (CTF 工具):
   Base64/Base32/Base58/Hex/Binary/URL/Unicode/ROT13/ROT47/JWT, ranked by
   confidence and explicitly labeled as non-deterministic.
 
+Web security module (Web安全):
+
+- **URL 解析器** (`web.url_parser`): scheme/host/port/path/query/fragment and
+  query parameters with sensitive-field notices.
+- **HTTP Header 分析器** (`web.http_headers`): HEAD request (with recorded GET
+  fallback) and full header table with sensitive-value redaction.
+- **Cookie 安全分析** (`web.cookie_analysis`): Set-Cookie Secure/HttpOnly/
+  SameSite attributes; values masked by default.
+- **Web 安全 Header 检查** (`web.security_headers`): presence checks for nine
+  common security headers with careful, fact-based findings.
+- **TLS 信息分析** (`web.tls_info`): negotiated version, cipher, certificate,
+  expiry and hostname verification (never bypasses verification).
+- **HTTP 请求分析** (`web.http_analysis`): composite GET analysis combining
+  headers, redirects, security headers, cookies, TLS and page metadata.
+
+> The web module is for web security learning, site configuration review, labs,
+> CTF practice and authorized testing. It performs plain GET/HEAD analysis only
+> and ships no exploitation, payload generation, credential brute-force or
+> stealth capabilities. Sensitive headers are redacted by default.
+
 > MD5 is a one-way hash function. This tool searches user-provided candidate
 > spaces for a matching value; it never queries online services, uploads hashes
 > or performs online authentication brute-force.

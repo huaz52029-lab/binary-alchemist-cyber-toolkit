@@ -13,6 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Plugin management UI and report center.
 - PyInstaller onedir / installer packaging.
 
+## [0.7.0] - 2026-09-21
+
+### Added
+
+- Web security module: URL parser, HTTP header analyzer (HEAD + GET fallback),
+  Cookie attribute analysis, nine security-header checks, TLS/certificate
+  inspection and a composite HTTP analysis tool with page metadata.
+- Unified `HttpClient` (httpx GET/HEAD: timeouts, redirect chain tracking,
+  bounded response body, cancellation, TLS verification) and `TlsClient`
+  (stdlib ssl + cryptography certificate parsing; never bypasses verification).
+- Sensitive header redaction (Authorization/Cookie -> [REDACTED]), masked cookie
+  values, private-target notices and calibrated findings (missing headers and
+  cookie attributes are facts, not vulnerability verdicts).
+- Local HTTP/TLS server test fixtures; no external network in tests.
+
 ## [0.6.0] - 2026-09-21
 
 ### Added

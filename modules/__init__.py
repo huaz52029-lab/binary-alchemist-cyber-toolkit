@@ -34,6 +34,12 @@ def register_builtin_tools(registry: ToolRegistry) -> None:
     from modules.network.ping import PingTool
     from modules.network.tcp_connect import TCPConnectTool
     from modules.network.tcp_scan import TcpScanTool
+    from modules.web.cookie_analysis import CookieAnalysisTool
+    from modules.web.http_analysis import HttpAnalysisTool
+    from modules.web.http_headers import HttpHeadersTool
+    from modules.web.security_headers import SecurityHeadersTool
+    from modules.web.tls_info import TlsInfoTool
+    from modules.web.url_parser import UrlParserTool
 
     registry.register(IPInfoTool())
     registry.register(PingTool())
@@ -58,6 +64,12 @@ def register_builtin_tools(registry: ToolRegistry) -> None:
     registry.register(JwtTool())
     registry.register(RsaHelperTool())
     registry.register(AutoDecodeTool())
+    registry.register(UrlParserTool())
+    registry.register(HttpHeadersTool())
+    registry.register(CookieAnalysisTool())
+    registry.register(SecurityHeadersTool())
+    registry.register(TlsInfoTool())
+    registry.register(HttpAnalysisTool())
 
 
 __all__ = ["register_builtin_tools"]
