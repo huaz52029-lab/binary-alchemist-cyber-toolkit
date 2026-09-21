@@ -12,6 +12,7 @@ from core.tool_registry import ToolRegistry
 
 def register_builtin_tools(registry: ToolRegistry) -> None:
     """Register every built-in tool shipped with the application."""
+    from modules.crypto.md5_reverse import MD5ReverseCtfTool, MD5ReverseTool
     from modules.network.dns import DnsTool
     from modules.network.ip_info import IPInfoTool
     from modules.network.network_interfaces import NetworkInterfacesTool
@@ -25,6 +26,8 @@ def register_builtin_tools(registry: ToolRegistry) -> None:
     registry.register(TcpScanTool())
     registry.register(DnsTool())
     registry.register(NetworkInterfacesTool())
+    registry.register(MD5ReverseTool())
+    registry.register(MD5ReverseCtfTool())
 
 
 __all__ = ["register_builtin_tools"]

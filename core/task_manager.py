@@ -336,12 +336,18 @@ class TaskManager:
             copy = task.model_copy()
         self._notify(copy)
 
-    def _update_progress(self, task_id: str, progress: float, message: str | None) -> None:
+    def _update_progress(
+        self,
+        task_id: str,
+        progress: float | None,
+        message: str | None,
+    ) -> None:
         with self._lock:
             task = self._tasks.get(task_id)
             if task is None or task.status is not TaskStatus.RUNNING:
                 return
-            task.progress = max(0.0, min(100.0, progress))
+            if progress is not None:
+                task.progress = max(0.0, min(100.0, progress))
             if message is not None:
                 task.message = message
             copy = task.model_copy()

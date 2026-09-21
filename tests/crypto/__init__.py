@@ -1,0 +1,1 @@
+"""Crypto tool module tests."""

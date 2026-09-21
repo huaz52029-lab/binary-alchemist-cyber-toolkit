@@ -34,8 +34,10 @@ class ToolParameterKind(StrEnum):
     """Widget-neutral parameter kinds the UI can render generically."""
 
     TEXT = "text"
+    MULTILINE = "multiline"
     INTEGER = "integer"
     CHOICE = "choice"
+    FILE = "file"
 
 
 class ToolParameter(BaseModel):
@@ -51,6 +53,8 @@ class ToolParameter(BaseModel):
     minimum: int | None = None
     maximum: int | None = None
     choices: list[str] = Field(default_factory=list)
+    choice_labels: list[str] = Field(default_factory=list)
+    visible_when: dict[str, str | int] = Field(default_factory=dict)
 
 
 _CATEGORY_LABELS = {

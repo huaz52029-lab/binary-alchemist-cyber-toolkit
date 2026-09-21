@@ -50,6 +50,16 @@ Network security module (网络安全):
 - **网络接口** (`network.interfaces`): local interface addresses, MAC, status,
   MTU and traffic counters.
 
+Cryptography module (密码学):
+
+- **MD5 哈希逆向分析器** (`crypto.md5_reverse`): offline candidate verification,
+  local dictionary matching and bounded charset brute-force search for MD5
+  hashes; also exposed in the CTF category as MD5 Hash 分析 (`ctf.md5_reverse`).
+
+> MD5 is a one-way hash function. This tool searches user-provided candidate
+> spaces for a matching value; it never queries online services, uploads hashes
+> or performs online authentication brute-force.
+
 > Network scanning is intended for local machines, lab environments, CTF
 > practice, training ranges and **explicitly authorized** testing only. It
 > performs TCP connect scans and never ships exploitation, fingerprinting or

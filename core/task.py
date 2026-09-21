@@ -48,7 +48,7 @@ class Task(BaseModel):
     result: ToolResult | None = None
 
 
-ProgressCallback = Callable[[float, str | None], None]
+ProgressCallback = Callable[[float | None, str | None], None]
 
 
 class ExecutionContext:
@@ -116,8 +116,12 @@ class ExecutionContext:
     def error(self, message: str) -> None:
         self.log(logging.ERROR, message)
 
-    def set_progress(self, progress: float, message: str | None = None) -> None:
-        """Report progress (0-100) and an optional human-readable message."""
+    def set_progress(self, progress: float | None = None, message: str | None = None) -> None:
+        """Report progress (0-100) and an optional human-readable message.
+
+        Pass ``progress=None`` when the total work is unknown; only the message
+        is updated, so no fabricated percentage is shown.
+        """
         if self._on_progress is not None:
             self._on_progress(progress, message)
 

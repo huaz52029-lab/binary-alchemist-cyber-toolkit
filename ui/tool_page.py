@@ -34,6 +34,38 @@ from ui.theme import ThemeManager
 from ui.widgets.command_input import CommandInput
 
 
+class _FileInput(QWidget):
+    """Text input with a native file picker, used for FILE parameters."""
+
+    text_changed = Signal(str)
+
+    def __init__(self, *, placeholder: str = "", parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self._edit = CommandInput(label="", placeholder=placeholder, parent=self)
+        browse = QPushButton("选择…", self)
+        browse.setObjectName("flatButton")
+        browse.clicked.connect(self._browse)
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self._edit, 1)
+        layout.addWidget(browse)
+        self._edit.text_changed.connect(self.text_changed)
+
+    def text(self) -> str:
+        return self._edit.text()
+
+    def set_text(self, value: str) -> None:
+        self._edit.set_text(value)
+
+    def clear(self) -> None:
+        self._edit.clear()
+
+    def _browse(self) -> None:
+        file_path, _selected_filter = QFileDialog.getOpenFileName(self, "选择文件")
+        if file_path:
+            self._edit.set_text(file_path)
+
+
 class ToolPage(QWidget):
     """A tool-agnostic workspace: header, parameter form, actions and results.
 
@@ -66,6 +98,8 @@ class ToolPage(QWidget):
         self._current_task_id: str | None = None
         self._last_result: ToolResult | None = None
         self._fields: dict[str, QWidget] = {}
+        self._form: QFormLayout | None = None
+        self._row_meta: list[tuple[Any, int]] = []
         self._logger = logging.getLogger("ui.tool")
 
         title = QLabel(definition.name, self)
@@ -87,10 +121,14 @@ class ToolPage(QWidget):
             form = QFormLayout(form_container)
             form.setContentsMargins(0, 0, 0, 0)
             form.setSpacing(6)
+            self._form = form
             for parameter in definition.parameters:
                 field = self._make_field(parameter)
                 self._fields[parameter.name] = field
                 form.addRow(parameter.label, field)
+                self._row_meta.append((parameter, form.rowCount() - 1))
+                self._connect_field_changes(field)
+            self._update_visibility()
             self._input_host.addWidget(form_container)
 
         self._run_button = QPushButton("运行", self)
@@ -175,6 +213,8 @@ class ToolPage(QWidget):
                 values[name] = widget.value()
             elif isinstance(widget, QComboBox):
                 values[name] = widget.currentData()
+            elif isinstance(widget, _FileInput):
+                values[name] = widget.text()
         return values
 
     def show_result(self, result: ToolResult) -> None:
@@ -196,20 +236,57 @@ class ToolPage(QWidget):
             return spin
         if parameter.kind is ToolParameterKind.CHOICE:
             combo = QComboBox(self)
-            for choice in parameter.choices:
-                combo.addItem(choice, choice)
+            for index, choice in enumerate(parameter.choices):
+                label = (
+                    parameter.choice_labels[index]
+                    if index < len(parameter.choice_labels)
+                    else choice
+                )
+                combo.addItem(label, choice)
             if parameter.default in parameter.choices:
                 combo.setCurrentIndex(combo.findData(parameter.default))
             return combo
+        if parameter.kind is ToolParameterKind.FILE:
+            return _FileInput(placeholder=parameter.placeholder, parent=self)
         field = CommandInput(
             label="",
             placeholder=parameter.placeholder,
-            mode=CommandInput.MODE_SINGLE,
+            mode=(
+                CommandInput.MODE_MULTI
+                if parameter.kind is ToolParameterKind.MULTILINE
+                else CommandInput.MODE_SINGLE
+            ),
             parent=self,
         )
         if isinstance(parameter.default, str):
             field.set_text(parameter.default)
         return field
+
+    def _connect_field_changes(self, widget: QWidget) -> None:
+        if isinstance(widget, CommandInput):
+            widget.text_changed.connect(self._on_field_changed)
+        elif isinstance(widget, QSpinBox):
+            widget.valueChanged.connect(self._on_field_changed)
+        elif isinstance(widget, QComboBox):
+            widget.currentIndexChanged.connect(self._on_field_changed)
+        elif isinstance(widget, _FileInput):
+            widget.text_changed.connect(self._on_field_changed)
+
+    def _on_field_changed(self, *_args: object) -> None:
+        self._update_visibility()
+
+    def _update_visibility(self) -> None:
+        """Show/hide form rows declared through ``visible_when`` conditions."""
+        if self._form is None:
+            return
+        values = self.params()
+        for parameter, row in self._row_meta:
+            if not parameter.visible_when:
+                continue
+            visible = all(
+                values.get(field) == expected for field, expected in parameter.visible_when.items()
+            )
+            self._form.setRowVisible(row, visible)
 
     def _submit(self) -> None:
         if self._tool is None or self._task_manager is None:
@@ -291,5 +368,7 @@ class ToolPage(QWidget):
                 widget.setValue(widget.minimum())
             elif isinstance(widget, QComboBox) and widget.count() > 0:
                 widget.setCurrentIndex(0)
+            elif isinstance(widget, _FileInput):
+                widget.clear()
         self._detail_view.setVisible(False)
         self._result_panel.clear()

@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Plugin management UI and report center.
 - PyInstaller onedir / installer packaging.
 
+## [0.5.0] - 2026-09-21
+
+### Added
+
+- MD5 哈希逆向分析器 (`crypto.md5_reverse`): offline single/batch candidate
+  verification, streaming UTF-8 dictionary matching and bounded charset
+  brute-force with progress, speed stats, cancellation and calibrated findings.
+- CTF shortcut entry `ctf.md5_reverse` reusing the single implementation.
+- Declarative parameter extensions: multiline / file fields, choice labels and
+  conditional field visibility; unknown-progress reporting in ExecutionContext.
+- `infrastructure/crypto/md5_provider.py` shared MD5 helper.
+
 ## [0.4.0] - 2026-09-21
 
 ### Added
