@@ -24,6 +24,11 @@ class ReportManager:
         self._history = history_manager
         self._renderer = ReportRenderer()
 
+    @property
+    def repository(self) -> ReportRepository:
+        """Read-only access to the underlying repository (for maintenance)."""
+        return self._repository
+
     def create(
         self,
         title: str,

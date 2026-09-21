@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import builtins
 import json
 import sqlite3
 import threading
@@ -173,6 +174,26 @@ class ReportRepository:
                 "DELETE FROM reports WHERE report_id = ?",
                 (report_id,),
             )
+
+    def broken_task_refs(self) -> builtins.list[dict[str, Any]]:
+        """References whose task id is missing from the history table."""
+        with self._lock:
+            rows = self._connection.execute(
+                """SELECT rt.report_id, rt.task_id
+                   FROM report_tasks rt
+                   LEFT JOIN tasks t ON t.task_id = rt.task_id
+                   WHERE t.task_id IS NULL"""
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    def remove_broken_task_refs(self) -> int:
+        """Delete dangling references; returns how many were removed."""
+        with self._lock, self._connection:
+            cursor = self._connection.execute(
+                """DELETE FROM report_tasks
+                   WHERE task_id NOT IN (SELECT task_id FROM tasks)"""
+            )
+        return int(cursor.rowcount)
 
     def close(self) -> None:
         self._connection.close()

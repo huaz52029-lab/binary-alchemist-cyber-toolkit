@@ -218,6 +218,15 @@ class HistoryRepository:
             ).fetchall()
         return [str(row[column]) for row in rows]
 
+    def artifact_task_ids(self) -> set[str]:
+        """Task ids that currently reference an on-disk artifact."""
+        assert self._connection is not None
+        with self._lock:
+            rows = self._connection.execute(
+                "SELECT task_id FROM tasks WHERE artifact_path != ''"
+            ).fetchall()
+        return {str(row["task_id"]) for row in rows}
+
     @staticmethod
     def _row_to_dict(row: sqlite3.Row) -> dict[str, Any]:
         record = dict(row)

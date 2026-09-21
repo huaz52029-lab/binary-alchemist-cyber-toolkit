@@ -16,9 +16,9 @@
 
 5. **窗口化 EXE 的 `--version` 无可见输出**：`console=False` 的 GUI 程序没有
    控制台，命令行输出不可见；版本号仍显示在 GUI 状态栏且来源统一。
-6. **便携式数据目录**：冻结应用把 `data/`、`logs/`、`plugins/` 写在 EXE
-   旁（onedir 便携布局）。安装到 Program Files 等只读目录时需通过
-   `CYBERTOOLKIT_HOME` 重定位可写数据。
+6. **便携模式为显式选择**：冻结应用默认把用户数据写入
+   `%LOCALAPPDATA%\BinaryAlchemist`；如需“随身 U 盘”式便携布局，需在 EXE
+   旁放置 `portable.flag`（或设置 `CYBERTOOLKIT_HOME`）。程序不写注册表。
 7. **构建工具依赖虚拟环境解释器**：`python scripts/lint.py` 等脚本使用
    当前解释器；若系统 `python` 不是项目虚拟环境，需改用
    `.venv\Scripts\python.exe` 运行。

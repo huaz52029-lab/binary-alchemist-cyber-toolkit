@@ -18,9 +18,23 @@ def _filter_binaries(binaries):
     and break Qt's DLL loading, so they must never ship.
     """
     blocked_names = {"ucrtbase.dll"}
+    unused_qt = {
+        "Qt6Pdf.dll",
+        "Qt6Qml.dll",
+        "Qt6QmlMeta.dll",
+        "Qt6QmlModels.dll",
+        "Qt6QmlWorkerScript.dll",
+        "Qt6Quick.dll",
+        "Qt6VirtualKeyboard.dll",
+        "QtPdf.pyd",
+        "QtQml.pyd",
+        "QtQuick.pyd",
+        "QtVirtualKeyboard.pyd",
+    }
     filtered = []
     for name, path, kind in binaries:
-        if name.lower() in blocked_names:
+        basename = name.replace("\\", "/").rsplit("/", 1)[-1]
+        if basename.lower() in blocked_names or basename in unused_qt:
             continue
         if name.lower().startswith("api-ms-win-"):
             continue
@@ -45,7 +59,14 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=[
+        "mypy",
+        "mypy_extensions",
+        "ast_serialize",
+        "pydantic.v1.mypy",
+        "setuptools",
+        "pkg_resources",
+    ],
     noarchive=False,
 )
 a.binaries = _filter_binaries(a.binaries)

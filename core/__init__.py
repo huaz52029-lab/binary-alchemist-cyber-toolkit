@@ -14,6 +14,6 @@ APP_DISPLAY_NAME = "二进制炼金术士 · 网安工具箱"
 try:
     APP_VERSION = version("binary-alchemist-cyber-toolkit")
 except PackageNotFoundError:
-    APP_VERSION = "0.13.0"
+    APP_VERSION = "0.14.0"
 
 __all__ = ["APP_DISPLAY_NAME", "APP_NAME", "APP_VERSION"]

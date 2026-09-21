@@ -77,8 +77,9 @@ class TaskPanel(QWidget):
         row = self._row_indices.get(task.task_id)
         if row is None or row >= self._table.rowCount():
             self._table.insertRow(0)
+            self._row_indices = {task_id: index + 1 for task_id, index in self._row_indices.items()}
+            self._row_indices[task.task_id] = 0
             row = 0
-            self._row_indices[task.task_id] = row
         values = self._row_values(task)
         for column, value in enumerate(values):
             self._table.setItem(row, column, QTableWidgetItem(value))

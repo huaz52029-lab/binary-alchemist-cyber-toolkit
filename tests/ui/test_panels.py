@@ -70,3 +70,34 @@ def test_task_panel_rows_and_clear(qapp: QApplication) -> None:
     panel.clear()
     assert panel.task_count() == 0
     assert panel._table.rowCount() == 0
+
+
+def test_task_panel_insert_does_not_corrupt_existing_row_indices(qapp: QApplication) -> None:
+    panel = TaskPanel()
+    now = datetime.now(UTC)
+    first = Task(
+        task_id="task-a",
+        tool_id="network.ping",
+        status=TaskStatus.RUNNING,
+        started_at=now,
+        message="first",
+    )
+    second = Task(
+        task_id="task-b",
+        tool_id="crypto.hash",
+        status=TaskStatus.RUNNING,
+        started_at=now,
+        message="second",
+    )
+    panel.set_task(first)
+    panel.set_task(second)  # newest first: B at row 0, A at row 1
+    assert panel._table.item(0, 1).text() == "crypto.hash"
+    assert panel._table.item(1, 1).text() == "network.ping"
+    # Updating the older task must target its own row, not the one above it.
+    first.message = "updated"
+    first.status = TaskStatus.COMPLETED
+    panel.set_task(first)
+    assert panel._table.item(0, 1).text() == "crypto.hash"
+    assert panel._table.item(1, 1).text() == "network.ping"
+    assert panel._table.item(1, 2).text() == "COMPLETED"
+    assert panel._table.item(1, 6).text() == "updated"

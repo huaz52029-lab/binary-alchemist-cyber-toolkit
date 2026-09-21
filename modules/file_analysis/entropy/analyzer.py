@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from collections import Counter
 from collections.abc import Iterable
 
 
@@ -22,7 +23,5 @@ def shannon_entropy(counts: Iterable[int], total: int | None = None) -> float:
 
 
 def entropy_from_bytes(data: bytes) -> float:
-    counts = [0] * 256
-    for byte in data:
-        counts[byte] += 1
-    return shannon_entropy(counts)
+    """Entropy of one in-memory buffer (Counter uses a C-accelerated count)."""
+    return shannon_entropy(Counter(data).values())

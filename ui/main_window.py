@@ -24,6 +24,7 @@ from PySide6.QtWidgets import (
 from core import APP_DISPLAY_NAME, APP_VERSION
 from core.app_context import AppContext
 from core.config_manager import WindowSettings
+from core.history.maintenance import DatabaseMaintenance
 from core.task import Task
 from core.tool_definition import ToolCategory
 from ui.bridge import LogBridge, TaskBridge
@@ -300,7 +301,17 @@ class MainWindow(QMainWindow):
         self._logger.info("Theme switched to %s", theme)
 
     def _open_settings(self) -> None:
-        dialog = SettingsDialog(self._context.config_manager, self._theme, self)
+        maintenance = DatabaseMaintenance(
+            self._context.history_manager,
+            self._context.report_manager,
+            self._context.paths.data / "results",
+        )
+        dialog = SettingsDialog(
+            self._context.config_manager,
+            self._theme,
+            self,
+            maintenance=maintenance,
+        )
         dialog.exec()
 
     def closeEvent(self, event: QCloseEvent) -> None:

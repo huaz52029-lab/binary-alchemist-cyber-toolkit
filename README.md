@@ -28,11 +28,11 @@ built around clean architecture, a plugin system and a unified task/result model
 
 ## Project status
 
-Phases 0-12 are complete: core, GUI framework, network, encoding, crypto, web,
-file analysis, system security, CTF workbench, plugin system, task history and
-report center, plus a full-project quality pass (unit/integration/regression/
-stress tests, coverage gates, static analysis and PyInstaller onedir
-packaging). The current quality status is summarized in
+Phases 0-13 are complete: core, GUI framework, network, encoding, crypto, web,
+file analysis, system security, CTF workbench, plugin system, task history,
+report center, a full-project quality pass (unit/integration/regression/stress
+tests, coverage gates, static analysis and PyInstaller onedir packaging) and a
+performance/engineering hardening pass. The current quality status is summarized in
 [docs/quality_report.md](docs/quality_report.md); known leftovers are tracked
 in [docs/known_issues.md](docs/known_issues.md). The build is in release
 candidate shape (recommended tag `v1.0.0-rc1`, not yet applied); see
@@ -248,6 +248,7 @@ python -m mypy              # static type check (strict)
 python scripts\test.py      # pytest suite
 python scripts\test.py --cov  # pytest + coverage report
 python scripts\build.py     # PyInstaller onedir build + frozen smoke test
+python scripts\bench.py     # performance benchmarks
 ```
 
 Run the commands with the project virtual environment interpreter
@@ -268,6 +269,18 @@ plugins/                user plugins (plugin.json + main.py)
 tests/                  pytest suite, no external-network dependencies
 scripts/                lint.py / test.py / build.py
 ```
+
+## Documentation
+
+- [docs/architecture.md](docs/architecture.md) - layers, data flow, plugins
+- [docs/development.md](docs/development.md) - environment, gates, packaging
+- [docs/user_guide.md](docs/user_guide.md) - usage guide
+- [docs/configuration.md](docs/configuration.md) - config, directories, portable mode
+- [docs/performance_baseline.md](docs/performance_baseline.md) and
+  [docs/performance_report.md](docs/performance_report.md) - measured benchmarks
+- [docs/quality_report.md](docs/quality_report.md) - stage 12 quality report
+- [docs/known_issues.md](docs/known_issues.md) - current known issues
+- [docs/third_party_licenses.md](docs/third_party_licenses.md) - dependency licenses
 
 ## Configuration
 
@@ -306,8 +319,9 @@ Produces a self-contained onedir bundle at `dist/BinaryAlchemist/`
 (`BinaryAlchemist.exe` plus shipped configs, themes and icons) and then launches
 the frozen executable with a built-in `--smoke-test` that boots the GUI, the
 tool registry, plugins, history, reports and the task pipeline. The bundle is
-portable: runtime data (`data/`, `logs/`, `plugins/`) is created next to the
-executable, and `CYBERTOOLKIT_HOME` relocates it when needed.
+portable: runtime data (`data/`, `logs/`, `plugins/`) lives under
+`%LOCALAPPDATA%\BinaryAlchemist`, or next to the executable when a
+`portable.flag` file is present; `CYBERTOOLKIT_HOME` relocates it when needed.
 
 ## License
 

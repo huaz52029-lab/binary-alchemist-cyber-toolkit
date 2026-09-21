@@ -149,6 +149,24 @@ def test_scan_reports_progress() -> None:
     assert messages and "开放 0" in messages[-1]
 
 
+def test_scan_progress_is_throttled_for_large_ranges() -> None:
+    progress: list[float] = []
+    tool = TcpScanTool(client=FakeScanClient())
+
+    def on_progress(value: float, message: str | None) -> None:
+        progress.append(value)
+
+    result = tool.run(
+        {"target": "127.0.0.1", "ports": "1-250", "timeout": 1000, "concurrency": 16},
+        _context(on_progress=on_progress),
+    )
+    assert result.status is ResultStatus.SUCCESS
+    # 250 probes must not produce 250 UI updates; 100/200/250 at most.
+    assert len(progress) <= 3
+    assert progress[-1] == 100.0
+    assert all(later >= earlier for earlier, later in pairwise(progress))
+
+
 def test_scan_concurrency_is_bounded() -> None:
     client = FakeScanClient(delay=0.005)
     tool = TcpScanTool(client=client)

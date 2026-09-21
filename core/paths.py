@@ -4,7 +4,8 @@ All filesystem locations are derived here so that no other module hard-codes pat
 The resolver understands two deployment modes:
 
 * source checkout - paths live under the repository root;
-* PyInstaller frozen bundle - runtime data lives next to the executable.
+* PyInstaller frozen bundle - user data lives under ``%LOCALAPPDATA%`` unless a
+  ``portable.flag`` file sits next to the executable (portable mode).
 
 Set the ``CYBERTOOLKIT_HOME`` environment variable to relocate runtime data
 (logs, database, user config and plugins) without touching the code base.
@@ -30,6 +31,13 @@ def data_root() -> Path:
     override = os.environ.get("CYBERTOOLKIT_HOME")
     if override:
         return Path(override).expanduser().resolve()
+    if getattr(sys, "frozen", False):
+        exe_dir = Path(sys.executable).resolve().parent
+        if (exe_dir / "portable.flag").is_file():
+            return exe_dir
+        local_app_data = os.environ.get("LOCALAPPDATA")
+        base = Path(local_app_data) if local_app_data else Path.home() / "AppData" / "Local"
+        return base / "BinaryAlchemist"
     return app_root()
 
 

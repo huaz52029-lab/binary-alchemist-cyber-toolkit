@@ -11,6 +11,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Installer packaging and reports/history UX refinements.
 
+## [0.14.0] - 2026-09-21
+
+### Added
+
+- Performance benchmarking harness (`scripts/bench.py`), performance baseline
+  and report docs, and database maintenance (orphan artifacts, broken report
+  references - report first, clean on request) with an ArtifactManager.
+- Settings UI for the global task concurrency limit and data maintenance.
+- Documentation suite: architecture, development, user guide, configuration
+  and third-party licenses.
+
+### Changed
+
+- Frozen releases store user data under `%LOCALAPPDATA%\BinaryAlchemist`;
+  a `portable.flag` next to the executable keeps the portable layout.
+- TCP scan progress updates are batched (every 100 probes plus a final 100%).
+- File entropy counting uses `collections.Counter` (measured ~15-20% faster).
+- PyInstaller bundle excludes dev tools (mypy/setuptools) and unused Qt
+  modules (QML/Quick/PDF/VirtualKeyboard): ~138MB -> ~116MB.
+
+### Fixed
+
+- TaskPanel row-index shift when inserting new tasks at the top (updates could
+  overwrite the wrong row).
+
 ## [0.13.0] - 2026-09-21
 
 ### Added

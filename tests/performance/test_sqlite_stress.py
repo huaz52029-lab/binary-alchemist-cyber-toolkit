@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sqlite3
 import threading
 from datetime import UTC, datetime
 from pathlib import Path
@@ -92,3 +93,27 @@ def test_history_and_reports_share_one_wal_database(tmp_path: Path) -> None:
     assert reports.get(report.report_id) is not None
     history.close()
     reports.close()
+
+
+def test_history_queries_use_indexes_not_full_scans(tmp_path: Path) -> None:
+    manager = TaskHistoryManager(tmp_path / "toolkit.db", tmp_path / "results")
+    manager.record_task(_task("t-index"))
+    manager.close()
+    connection = sqlite3.connect(tmp_path / "toolkit.db")
+    indexes = {
+        row[0]
+        for row in connection.execute(
+            "SELECT name FROM sqlite_master WHERE type='index'"
+        ).fetchall()
+    }
+    assert "idx_tasks_created" in indexes
+    assert "idx_tasks_tool" in indexes
+    assert "idx_tasks_status" in indexes
+    plan = connection.execute(
+        "EXPLAIN QUERY PLAN SELECT * FROM tasks "
+        "WHERE status='COMPLETED' AND tool_id='crypto.hash' "
+        "ORDER BY created_at DESC LIMIT 50"
+    ).fetchall()
+    plan_text = " ".join(str(row) for row in plan).lower()
+    assert "search tasks using index" in plan_text
+    connection.close()

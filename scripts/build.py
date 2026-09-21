@@ -32,6 +32,8 @@ def _run_smoke_test() -> int:
         return 1
     env = os.environ.copy()
     env.setdefault("QT_QPA_PLATFORM", "offscreen")
+    # Keep the build machine's real user data untouched during the smoke test.
+    env["CYBERTOOLKIT_HOME"] = str(PROJECT_ROOT / "work" / "smoke_home")
     result = subprocess.run(
         [str(exe), "--smoke-test"],
         cwd=exe.parent,

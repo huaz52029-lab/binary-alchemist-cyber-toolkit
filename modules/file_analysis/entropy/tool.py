@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from pathlib import Path
 from typing import Any, ClassVar
 
@@ -74,12 +75,11 @@ class FileEntropyTool(BaseTool):
         if not path.exists() or not path.is_file():
             return context.make_result(ResultStatus.FAILED, "文件不存在。")
         context.info(f"{self.id} 开始计算：{path.name}")
-        counts = [0] * 256
+        counts: Counter[int] = Counter()
         total = 0
         try:
             for chunk in iter_chunks(path, is_cancelled=lambda: context.is_cancelled):
-                for byte in chunk:
-                    counts[byte] += 1
+                counts.update(chunk)
                 total += len(chunk)
                 context.set_progress(None, f"已读取 {human_size(total)}")
         except FileSystemError as exc:

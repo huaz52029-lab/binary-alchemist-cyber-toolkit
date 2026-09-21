@@ -167,6 +167,7 @@ class TcpScanTool(BaseTool):
 
             submit_batch()
             done_count = 0
+            total_ports = len(ports)
             while pending:
                 done, _ = wait(pending, timeout=0.2, return_when=FIRST_COMPLETED)
                 if not done:
@@ -195,10 +196,11 @@ class TcpScanTool(BaseTool):
                     else:
                         error_count += 1
                     done_count += 1
-                    context.set_progress(
-                        done_count / len(ports) * 100.0,
-                        f"{done_count}/{len(ports)}，开放 {open_count}",
-                    )
+                    if done_count % 100 == 0 or done_count == total_ports:
+                        context.set_progress(
+                            done_count / total_ports * 100.0,
+                            f"{done_count}/{total_ports}，开放 {open_count}",
+                        )
                 context.raise_if_cancelled()
                 submit_batch()
         counts: dict[str, int | float] = {
