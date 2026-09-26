@@ -355,6 +355,15 @@ portable: runtime data (`data/`, `logs/`, `plugins/`) lives under
 `%LOCALAPPDATA%\BinaryAlchemist`, or next to the executable when a
 `portable.flag` file is present; `CYBERTOOLKIT_HOME` relocates it when needed.
 
+## ⚡ Support the project (支持项目)
+
+If Binary Alchemist Cyber Toolkit is useful to you, you can support its continued
+development through Afdian (爱发电).
+
+👉 [爱发电主页](https://afdian.com/a/huaz52029-lab)
+
+你的支持将用于后续网络安全工具、Python 项目及开源软件的开发与维护。
+
 ## License
 
 [MIT](LICENSE)
